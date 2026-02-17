@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thi trắc nghiệm</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f6f8;
+  margin: 0;
+  padding: 15px;
+  font-size: 18px;
+}
+
+.container {
+  max-width: 100%;
+  margin: auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+
+h2 {
+  margin-bottom: 20px;
+  font-size: 20px;
+}
+
+.answer {
+  border: 1px solid #ccc;
+  padding: 15px;
+  margin: 12px 0;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.answer:active {
+  background: #eef;
+}
+
+.correct {
+  background: #c8f7c5;
+  border-color: green;
+}
+
+.wrong {
+  background: #f7c5c5;
+  border-color: red;
+}
+
+button {
+  width: 100%;
+  margin-top: 20px;
+  padding: 15px;
+  font-size: 18px;
+  border-radius: 8px;
+  border: none;
+  background: #3498db;
+  color: white;
+}
+
+button:active {
+  background: #2980b9;
+}
+</style>
+</head>
+
+
+<body>
+<div class="container">
+  <h2 id="question"></h2>
+  <div id="answers"></div>
+  <button onclick="nextQuestion()">Câu tiếp theo</button>
+</div>
+
+<script>
+const questions = [
+ {
+    "q": "Luật Hành chính là ngành luật điều chỉnh:",
+    "a": [
+      "Các quan hệ tài sản",
+      "Các quan hệ xã hội phát sinh trong quá trình quản lý hành chính nhà nước",
+      "Các quan hệ lao động",
+      "Các quan hệ hình sự"
+    ],
+    "c": 1
+  },
+  {
+    "q": "Đối tượng điều chỉnh của Luật Hành chính là:",
+    "a": [
+      "Quan hệ dân sự",
+      "Quan hệ xã hội trong lĩnh vực quản lý hành chính nhà nước",
+      "Quan hệ hình sự",
+      "Quan hệ kinh tế"
+    ],
+    "c": 1
+  },
+  {
+    "q": "Phương pháp điều chỉnh chủ yếu của Luật Hành chính là:",
+    "a": [
+      "Bình đẳng – thỏa thuận",
+      "Mệnh lệnh – quyền uy",
+      "Tự nguyện",
+      "Khuyến khích"
+    ],
+    "c": 1
+  },
+  {
+    "q": "Chủ thể của quan hệ pháp luật hành chính là:",
+    "a": [
+      "Chỉ có cơ quan nhà nước",
+      "Cá nhân và tổ chức",
+      "Cơ quan nhà nước, tổ chức, cá nhân có thẩm quyền hoặc chịu sự quản lý hành chính",
+      "Chỉ có công dân"
+    ],
+    "c": 2
+  },
+  {
+    "q": "Quan hệ pháp luật hành chính mang đặc điểm:",
+    "a": [
+      "Các bên bình đẳng về quyền và nghĩa vụ",
+      "Một bên luôn là cơ quan nhà nước hoặc người có thẩm quyền quản lý",
+      "Không có yếu tố quyền lực nhà nước",
+      "Chỉ phát sinh khi có tranh chấp"
+    ],
+    "c": 1
+  },
+  {
+    "q": "Văn bản nào sau đây là văn bản quản lý hành chính nhà nước?",
+    "a": [
+      "Luật",
+      "Nghị quyết của Quốc hội",
+      "Quyết định hành chính",
+      "Bản án"
+    ],
+    "c": 2
+  },
+  {
+    "q": "Quyết định hành chính là:",
+    "a": [
+      "Văn bản quy phạm pháp luật",
+      "Văn bản áp dụng pháp luật do cơ quan hành chính ban hành",
+      "Văn bản xét xử",
+      "Văn bản của cơ quan lập pháp"
+    ],
+    "c": 1
+  },
+  {
+    "q": "Hành vi hành chính là:",
+    "a": [
+      "Hành vi trái pháp luật",
+      "Hành vi của cá nhân",
+      "Hành vi thực hiện nhiệm vụ quản lý hành chính nhà nước",
+      "Hành vi xét xử"
+    ],
+    "c": 2
+  },
+  {
+    "q": "Cán bộ, công chức là:",
+    "a": [
+      "Người lao động trong doanh nghiệp",
+      "Người làm việc trong cơ quan nhà nước theo hợp đồng",
+      "Người được tuyển dụng, bổ nhiệm vào ngạch, chức vụ trong cơ quan nhà nước",
+      "Người làm việc tự do"
+    ],
+    "c": 2
+  },
+  {
+    "q": "Nguyên tắc cơ bản của quản lý hành chính nhà nước là:",
+    "a": [
+      "Tuân thủ pháp luật",
+      "Tự do tuyệt đối",
+      "Không cần sự kiểm tra",
+      "Không chịu trách nhiệm"
+    ],
+    "c": 0
+  },
+ {
+    "q": "Vi phạm hành chính là:",
+    "a": [
+      "Hành vi trái đạo đức",
+      "Hành vi trái pháp luật hình sự",
+      "Hành vi trái pháp luật, có lỗi, do cá nhân hoặc tổ chức thực hiện, xâm phạm trật tự quản lý hành chính nhà nước",
+      "Hành vi gây thiệt hại dân sự"
+    ],
+    "c": 2
+  },
+  {
+    "q": "Xử phạt vi phạm hành chính là:",
+    "a": [
+      "Biện pháp giáo dục tự nguyện",
+      "Biện pháp cưỡng chế hình sự",
+      "Biện pháp cưỡng chế nhà nước áp dụng đối với cá nhân, tổ chức vi phạm hành chính",
+      "Biện pháp kỷ luật nội bộ"
+    ],
+    "c": 2
+  },
+  {
+    "q": "Hình thức xử phạt vi phạm hành chính gồm:",
+    "a": [
+      "Cảnh cáo, phạt tiền, tước quyền sử dụng giấy phép, đình chỉ hoạt động",
+      "Phạt tù, cải tạo không giam giữ",
+      "Bồi thường thiệt hại",
+      "Khiển trách, cảnh cáo"
+    ],
+    "c": 0
+  },
+  {
+    "q": "Biện pháp khắc phục hậu quả trong xử phạt vi phạm hành chính là:",
+    "a": [
+      "Phạt tiền",
+      "Cảnh cáo",
+      "Buộc khôi phục lại tình trạng ban đầu, buộc tháo dỡ công trình vi phạm",
+      "Phạt tù"
+    ],
+    "c": 2
+  },
+  {
+    "q": "Chủ thể có thẩm quyền xử phạt vi phạm hành chính là:",
+    "a": [
+      "Mọi công dân",
+      "Cơ quan nhà nước và người có thẩm quyền theo quy định pháp luật",
+      "Chỉ có Tòa án",
+      "Chỉ có Quốc hội"
+    ],
+    "c": 1
+  },
+  {
+    "q": "Khiếu nại là:",
+    "a": [
+      "Việc công dân phản ánh ý kiến",
+      "Việc công dân, cơ quan, tổ chức đề nghị xem xét lại quyết định hành chính hoặc hành vi hành chính",
+      "Việc tố giác tội phạm",
+      "Việc tranh chấp dân sự"
+    ],
+    "c": 1
+  },
+  {
+    "q": "Tố cáo là:",
+    "a": [
+      "Việc phản ánh ý kiến cá nhân",
+      "Việc báo cho cơ quan có thẩm quyền biết về hành vi vi phạm pháp luật của cơ quan, tổ chức, cá nhân",
+      "Việc khiếu kiện hành chính",
+      "Việc khởi kiện ra tòa"
+    ],
+    "c": 1
+  },
+  {
+    "q": "Chủ thể có quyền khiếu nại là:",
+    "a": [
+      "Chỉ công dân",
+      "Chỉ tổ chức",
+      "Công dân, cơ quan, tổ chức có quyền và lợi ích bị xâm phạm",
+      "Chỉ cán bộ, công chức"
+    ],
+    "c": 2
+  },
+  {
+    "q": "Chủ thể có quyền tố cáo là:",
+    "a": [
+      "Chỉ công dân",
+      "Công dân",
+      "Công dân và tổ chức",
+      "Cơ quan nhà nước"
+    ],
+    "c": 1
+  },
+  {
+    "q": "Nguyên tắc giải quyết khiếu nại, tố cáo là:",
+    "a": [
+      "Nhanh chóng, kịp thời, đúng pháp luật",
+      "Kéo dài để xác minh",
+      "Giải quyết theo ý chí chủ quan",
+      "Không cần căn cứ pháp luật"
+    ],
+    "c": 0
+  },
+];
+
+let index = 0;
+let answered = false;
+
+function shuffle(array) {
+  return array
+    .map(v => ({ v, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ v }) => v);
+}
+
+function loadQuestion() {
+  answered = false;
+  const q = questions[index];
+  document.getElementById("question").innerText =
+    `Câu ${index + 1}: ` + q.q;
+
+  const answersDiv = document.getElementById("answers");
+  answersDiv.innerHTML = "";
+
+  const mixed = q.a.map((text, i) => ({ text, i }));
+  shuffle(mixed).forEach(ans => {
+    const div = document.createElement("div");
+    div.className = "answer";
+    div.innerText = ans.text;
+    div.onclick = () => checkAnswer(div, ans.i);
+    answersDiv.appendChild(div);
+  });
+}
+
+function checkAnswer(element, chosenIndex) {
+  if (answered) return;
+  answered = true;
+
+  const q = questions[index];
+  const all = document.querySelectorAll(".answer");
+
+  all.forEach(a => a.onclick = null);
+
+  if (chosenIndex === q.c) {
+    element.classList.add("correct");
+  } else {
+    element.classList.add("wrong");
+    all.forEach(a => {
+      if (a.innerText === q.a[q.c]) {
+        a.classList.add("correct");
+      }
+    });
+  }
+}
+
+function nextQuestion() {
+  index++;
+  if (index >= questions.length) {
+    alert("Bạn đã hoàn thành bài thi 🎉");
+    index = 0;
+  }
+  loadQuestion();
+}
+
+loadQuestion();
+</script>
+</body>
+</html>
