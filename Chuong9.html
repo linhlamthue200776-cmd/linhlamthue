@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thi trắc nghiệm</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f6f8;
+  margin: 0;
+  padding: 15px;
+  font-size: 18px;
+}
+
+.container {
+  max-width: 100%;
+  margin: auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+
+h2 {
+  margin-bottom: 20px;
+  font-size: 20px;
+}
+
+.answer {
+  border: 1px solid #ccc;
+  padding: 15px;
+  margin: 12px 0;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.answer:active {
+  background: #eef;
+}
+
+.correct {
+  background: #c8f7c5;
+  border-color: green;
+}
+
+.wrong {
+  background: #f7c5c5;
+  border-color: red;
+}
+
+button {
+  width: 100%;
+  margin-top: 20px;
+  padding: 15px;
+  font-size: 18px;
+  border-radius: 8px;
+  border: none;
+  background: #3498db;
+  color: white;
+}
+
+button:active {
+  background: #2980b9;
+}
+</style>
+</head>
+
+
+<body>
+<div class="container">
+  <h2 id="question"></h2>
+  <div id="answers"></div>
+  <button onclick="nextQuestion()">Câu tiếp theo</button>
+</div>
+
+<script>
+const questions = [
+{
+    "q": "Luật Hình sự là ngành luật điều chỉnh:",
+    "a": [
+      "Các quan hệ tài sản",
+      "Các quan hệ lao động",
+      "Các quan hệ xã hội phát sinh khi có tội phạm và hình phạt",
+      "Các quan hệ hành chính"
+    ],
+    "c": 2
+  },
+  {
+    "q": "Đối tượng điều chỉnh của Luật Hình sự là:",
+    "a": [
+      "Quan hệ dân sự",
+      "Quan hệ xã hội phát sinh khi nhà nước quy định tội phạm và hình phạt",
+      "Quan hệ kinh tế",
+      "Quan hệ lao động"
+    ],
+    "c": 1
+  },
+  {
+    "q": "Nhiệm vụ cơ bản của Luật Hình sự là:",
+    "a": [
+      "Điều chỉnh quan hệ tài sản",
+      "Bảo vệ trật tự quản lý hành chính",
+      "Bảo vệ chế độ xã hội chủ nghĩa, quyền con người, quyền và lợi ích hợp pháp của tổ chức, cá nhân",
+      "Giải quyết tranh chấp dân sự"
+    ],
+    "c": 2
+  },
+  {
+    "q": "Tội phạm là:",
+    "a": [
+      "Hành vi trái đạo đức xã hội",
+      "Hành vi nguy hiểm cho xã hội, bị Bộ luật Hình sự quy định là tội phạm",
+      "Hành vi gây thiệt hại dân sự",
+      "Hành vi vi phạm hành chính"
+    ],
+    "c": 1
+  },
+  {
+    "q": "Dấu hiệu cơ bản của tội phạm là:",
+    "a": [
+      "Hành vi trái pháp luật và có lỗi",
+      "Hành vi nguy hiểm cho xã hội, có lỗi, do người có năng lực trách nhiệm hình sự thực hiện và được quy định trong Bộ luật Hình sự",
+      "Hành vi gây thiệt hại",
+      "Hành vi bị xử phạt"
+    ],
+    "c": 1
+  },
+  {
+    "q": "Căn cứ để xác định trách nhiệm hình sự là:",
+    "a": [
+      "Có hành vi vi phạm đạo đức",
+      "Có thiệt hại xảy ra",
+      "Có hành vi phạm tội",
+      "Có yêu cầu của nhà nước"
+    ],
+    "c": 2
+  },
+  {
+    "q": "Lỗi trong Luật Hình sự được hiểu là:",
+    "a": [
+      "Hành vi trái pháp luật",
+      "Thái độ tâm lý của người phạm tội đối với hành vi và hậu quả của hành vi đó",
+      "Hành vi gây thiệt hại",
+      "Hình phạt áp dụng"
+    ],
+    "c": 1
+  },
+  {
+    "q": "Các hình thức lỗi trong Luật Hình sự gồm:",
+    "a": [
+      "Cố ý và vô ý",
+      "Trực tiếp và gián tiếp",
+      "Nặng và nhẹ",
+      "Có lỗi và không có lỗi"
+    ],
+    "c": 0
+  },
+  {
+    "q": "Người có năng lực trách nhiệm hình sự là:",
+    "a": [
+      "Mọi cá nhân",
+      "Người đủ tuổi theo luật định và có khả năng nhận thức, điều khiển hành vi",
+      "Chỉ người đủ 18 tuổi",
+      "Chỉ người có quốc tịch Việt Nam"
+    ],
+    "c": 1
+  },
+  {
+    "q": "Tuổi chịu trách nhiệm hình sự theo quy định chung là:",
+    "a": [
+      "Từ đủ 14 tuổi trở lên",
+      "Từ đủ 15 tuổi trở lên",
+      "Từ đủ 16 tuổi trở lên",
+      "Từ đủ 18 tuổi trở lên"
+    ],
+    "c": 2
+  },
+  {
+    "q": "Hình phạt trong Luật Hình sự là:",
+    "a": [
+      "Biện pháp giáo dục",
+      "Biện pháp cưỡng chế của Nhà nước do Tòa án áp dụng đối với người phạm tội",
+      "Biện pháp hành chính",
+      "Biện pháp dân sự"
+    ],
+    "c": 1
+  },
+  {
+    "q": "Mục đích của hình phạt là:",
+    "a": [
+      "Trả thù người phạm tội",
+      "Giáo dục, cải tạo người phạm tội và phòng ngừa tội phạm",
+      "Chỉ để trừng trị",
+      "Chỉ để răn đe"
+    ],
+    "c": 1
+  },
+  {
+    "q": "Hình phạt chính trong Luật Hình sự gồm:",
+    "a": [
+      "Cảnh cáo, phạt tiền, cải tạo không giam giữ, tù có thời hạn, tù chung thân, tử hình",
+      "Phạt tiền, tước quyền công dân",
+      "Cải tạo không giam giữ, quản chế",
+      "Phạt tiền, trục xuất"
+    ],
+    "c": 0
+  },
+  {
+    "q": "Hình phạt bổ sung là:",
+    "a": [
+      "Hình phạt thay thế hình phạt chính",
+      "Hình phạt áp dụng kèm theo hoặc độc lập trong một số trường hợp",
+      "Hình phạt hành chính",
+      "Biện pháp dân sự"
+    ],
+    "c": 1
+  },
+  {
+    "q": "Các hình phạt bổ sung bao gồm:",
+    "a": [
+      "Quản chế, cấm cư trú, tước một số quyền công dân, phạt tiền, trục xuất",
+      "Cảnh cáo, phạt tiền",
+      "Cải tạo không giam giữ",
+      "Tù có thời hạn"
+    ],
+    "c": 0
+  },
+  {
+    "q": "Miễn trách nhiệm hình sự là:",
+    "a": [
+      "Không bị xử phạt hành chính",
+      "Không bị coi là có tội",
+      "Không phải chịu trách nhiệm hình sự khi có đủ điều kiện luật định",
+      "Không phải bồi thường"
+    ],
+    "c": 2
+  },
+  {
+    "q": "Xóa án tích là:",
+    "a": [
+      "Xóa tội danh",
+      "Xóa hình phạt",
+      "Xóa việc kết án đã có hiệu lực pháp luật",
+      "Xóa trách nhiệm dân sự"
+    ],
+    "c": 2
+  },
+  {
+    "q": "Người được coi là chưa bị kết án khi:",
+    "a": [
+      "Đã chấp hành xong hình phạt",
+      "Được xóa án tích",
+      "Được tha tù trước thời hạn",
+      "Được giảm án"
+    ],
+    "c": 1
+  },
+  {
+    "q": "Thời điểm bắt đầu tính thời hạn xóa án tích là:",
+    "a": [
+      "Ngày phạm tội",
+      "Ngày tuyên án",
+      "Ngày chấp hành xong hình phạt chính và hình phạt bổ sung",
+      "Ngày được giảm án"
+    ],
+    "c": 2
+  },
+  {
+    "q": "Nguyên tắc xử lý người phạm tội là:",
+    "a": [
+      "Mọi hành vi đều bị xử nặng",
+      "Công bằng, nghiêm minh, nhân đạo",
+      "Chỉ chú trọng trừng phạt",
+      "Chỉ chú trọng giáo dục"
+    ],
+    "c": 1
+  },
+];
+
+let index = 0;
+let answered = false;
+
+function shuffle(array) {
+  return array
+    .map(v => ({ v, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ v }) => v);
+}
+
+function loadQuestion() {
+  answered = false;
+  const q = questions[index];
+  document.getElementById("question").innerText =
+    `Câu ${index + 1}: ` + q.q;
+
+  const answersDiv = document.getElementById("answers");
+  answersDiv.innerHTML = "";
+
+  const mixed = q.a.map((text, i) => ({ text, i }));
+  shuffle(mixed).forEach(ans => {
+    const div = document.createElement("div");
+    div.className = "answer";
+    div.innerText = ans.text;
+    div.onclick = () => checkAnswer(div, ans.i);
+    answersDiv.appendChild(div);
+  });
+}
+
+function checkAnswer(element, chosenIndex) {
+  if (answered) return;
+  answered = true;
+
+  const q = questions[index];
+  const all = document.querySelectorAll(".answer");
+
+  all.forEach(a => a.onclick = null);
+
+  if (chosenIndex === q.c) {
+    element.classList.add("correct");
+  } else {
+    element.classList.add("wrong");
+    all.forEach(a => {
+      if (a.innerText === q.a[q.c]) {
+        a.classList.add("correct");
+      }
+    });
+  }
+}
+
+function nextQuestion() {
+  index++;
+  if (index >= questions.length) {
+    alert("Bạn đã hoàn thành bài thi 🎉");
+    index = 0;
+  }
+  loadQuestion();
+}
+
+loadQuestion();
+</script>
+</body>
+</html>
