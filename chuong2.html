@@ -20,11 +20,9 @@ body {
   background: #fff;
   padding: 20px;
   border-radius: 10px;
-  box-sizing: border-box;
 }
 
 h2 {
-  margin-bottom: 20px;
   font-size: 20px;
 }
 
@@ -34,7 +32,6 @@ h2 {
   margin: 12px 0;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 18px;
 }
 
 .answer:active {
@@ -68,538 +65,561 @@ button:active {
 </style>
 </head>
 
-
 <body>
+
 <div class="container">
   <h2 id="question"></h2>
   <div id="answers"></div>
   <button onclick="nextQuestion()">Câu tiếp theo</button>
 </div>
-
 <script>
+// ================== DỮ LIỆU CÂU HỎI ==================
 const questions = [
   {
-    "q": "Kiểu tổ chức kinh tế đầu tiên của xã hội loài người là....",
-    "a": ["Kinh tế hàng hoá", "Kinh tế cá thể", "Kinh tế tự nhiên", "Kinh tế thị trường"],
-    "c": 2
+    q: "Kiểu tổ chức kinh tế đầu tiên của xã hội loài người là....",
+    a: ["Kinh tế hàng hoá", "Kinh tế cá thể", "Kinh tế tự nhiên", "Kinh tế thị trường"],
+    c: 2
   },
   {
-    "q": "Sản xuất hàng hoá là...",
-    "a": ["Kiểu tổ chức hoạt động kinh tế mà ở đó, những người sản xuất ra sản phẩm nhằm mục đích trao đổi, mua bán", "Kiểu tổ chức hoạt động kinh tế mà ở đó, sản phẩm được sản xuất ra nhằm thoả mãn nhu cầu của bản thân người sản xuất", "Kiểu tổ chức hoạt động kinh tế mà ở đó, sản phẩm được sản xuất ra nhằm thoả mãn nhu cầu mang tính nội bộ", "Kiểu tổ chức hoạt động kinh tế mà ở đó, những người sản xuất ra sản phẩm nhằm đáp ứng nhu cầu của xã hội"],
-    "c": 0
+    q: "Sản xuất hàng hoá là...",
+    a: ["Kiểu tổ chức hoạt động kinh tế mà ở đó, những người sản xuất ra sản phẩm nhằm mục đích trao đổi, mua bán", "Kiểu tổ chức hoạt động kinh tế mà ở đó, sản phẩm được sản xuất ra nhằm thoả mãn nhu cầu của bản thân người sản xuất", "Kiểu tổ chức hoạt động kinh tế mà ở đó, sản phẩm được sản xuất ra nhằm thoả mãn nhu cầu mang tính nội bộ", "Kiểu tổ chức hoạt động kinh tế mà ở đó, những người sản xuất ra sản phẩm nhằm đáp ứng nhu cầu của xã hội"],
+    c: 0
   },
   {
-    "q": "Điều kiện ra đời và tồn tại của sản xuất hàng hóa là...",
-    "a": ["Phân công lao động cá biệt và chế độ tư hữu về tư liệu sản xuất", "Phân công lao động chung và chế độ sở hữu khác nhau về tư liệu sản xuất", "Phân công lao động nội bộ và sự tách biệt về kinh tế giữa những người sản xuất", "Phân công lao động xã hội và sự tách biệt tương đối về kinh tế giữa những người sản xuất"],
-    "c": 3
+    q: "Điều kiện ra đời và tồn tại của sản xuất hàng hóa là...",
+    a: ["Phân công lao động cá biệt và chế độ tư hữu về tư liệu sản xuất", "Phân công lao động chung và chế độ sở hữu khác nhau về tư liệu sản xuất", "Phân công lao động nội bộ và sự tách biệt về kinh tế giữa những người sản xuất", "Phân công lao động xã hội và sự tách biệt tương đối về kinh tế giữa những người sản xuất"],
+    c: 3
   },
   {
-    "q": "Mục đích của người sản xuất trong kinh tế hàng hoá là...",
-    "a": ["Trao đổi, mua bán", "Tự tiêu dùng", "Tăng năng suất lao động", "Tăng cường độ lao động"],
-    "c": 0
+    q: "Mục đích của người sản xuất trong kinh tế hàng hoá là...",
+    a: ["Trao đổi, mua bán", "Tự tiêu dùng", "Tăng năng suất lao động", "Tăng cường độ lao động"],
+    c: 0
   },
   {
-    "q": "Phân công lao động xã hội là:",
-    "a": ["Sự phân chia lao động xã hội vào các ngành, lĩnh vực khác nhau", "Sự chia nhỏ quá trình sản xuất, mỗi người đảm nhận một công đoạn", "Sự phân chia tư liệu sản xuất giữa các ngành", "Sự phân chia giữa các thành viên trong nội bộ gia đình"],
-    "c": 0
+    q: "Phân công lao động xã hội là:",
+    a: ["Sự phân chia lao động xã hội vào các ngành, lĩnh vực khác nhau", "Sự chia nhỏ quá trình sản xuất, mỗi người đảm nhận một công đoạn", "Sự phân chia tư liệu sản xuất giữa các ngành", "Sự phân chia giữa các thành viên trong nội bộ gia đình"],
+    c: 0
   },
   {
-    "q": "Sự tách biệt tương đối về mặt kinh tế giữa các chủ thể sản xuất nghĩa là gì?",
-    "a": ["Những người sản xuất độc lập với nhau, có sở hữu tư nhân về tư liệu sản xuất", "Mỗi người sản xuất ra một sản phẩm khác nhau", "Mọi người không giao tiếp với nhau trong quá trình sản xuất", "Mỗi người sử dụng một phương pháp khác nhau trong quá trình sản xuất"],
-    "c": 0
+    q: "Sự tách biệt tương đối về mặt kinh tế giữa các chủ thể sản xuất nghĩa là gì?",
+    a: ["Những người sản xuất độc lập với nhau, có sở hữu tư nhân về tư liệu sản xuất", "Mỗi người sản xuất ra một sản phẩm khác nhau", "Mọi người không giao tiếp với nhau trong quá trình sản xuất", "Mỗi người sử dụng một phương pháp khác nhau trong quá trình sản xuất"],
+    c: 0
   },
   {
-    "q": "Phân công lao động xã hội làm cho những người sản xuất hàng hóa...",
-    "a": ["Độc lập với nhau", "Phụ thuộc vào nhau", "Đối lập với nhau", "Tách rời nhau"],
-    "c": 1
+    q: "Phân công lao động xã hội làm cho những người sản xuất hàng hóa...",
+    a: ["Độc lập với nhau", "Phụ thuộc vào nhau", "Đối lập với nhau", "Tách rời nhau"],
+    c: 1
   },
   {
-    "q": "Sự tách biệt tương đối về mặt kinh tế giữa các chủ thể sản xuất làm cho họ...",
-    "a": ["Độc lập với nhau", "Phụ thuộc vào nhau", "Mâu thuẫn với nhau", "Tách rời nhau"],
-    "c": 0
+    q: "Sự tách biệt tương đối về mặt kinh tế giữa các chủ thể sản xuất làm cho họ...",
+    a: ["Độc lập với nhau", "Phụ thuộc vào nhau", "Mâu thuẫn với nhau", "Tách rời nhau"],
+    c: 0
   },
   {
-    "q": "Giá trị sử dụng của hàng hoá nhằm...",
-    "a": ["Thoả mãn nhu cầu của người sản xuất ra nó", "Thoả mãn nhu cầu của người mua", "Thoả mãn nhu cầu của người bán", "Thoả mãn nhu cầu của người quản lí"],
-    "c": 1
+    q: "Giá trị sử dụng của hàng hoá nhằm...",
+    a: ["Thoả mãn nhu cầu của người sản xuất ra nó", "Thoả mãn nhu cầu của người mua", "Thoả mãn nhu cầu của người bán", "Thoả mãn nhu cầu của người quản lí"],
+    c: 1
   },
   {
-    "q": "Mục đích của người sản xuất trong kinh tế tự nhiên là gì?",
-    "a": ["Trao đổi, mua bán", "Tự tiêu dùng", "Tăng năng suất lao động", "Tối đa hóa lợi nhuận"],
-    "c": 1
+    q: "Mục đích của người sản xuất trong kinh tế tự nhiên là gì?",
+    a: ["Trao đổi, mua bán", "Tự tiêu dùng", "Tăng năng suất lao động", "Tối đa hóa lợi nhuận"],
+    c: 1
   },
   {
-    "q": "Hàng hóa là gì?",
-    "a": ["Là sản phẩm của lao động", "Là sản phẩm của lao động, có thể thỏa mãn một nhu cầu nào đó của con người thông qua trao đổi, mua bán", "Là cái có thể thỏa mãn nhu cầu nào đó cho con người", "Là những dạng vật chất hữu hình"],
-    "c": 1
+    q: "Hàng hóa là gì?",
+    a: ["Là sản phẩm của lao động", "Là sản phẩm của lao động, có thể thỏa mãn một nhu cầu nào đó của con người thông qua trao đổi, mua bán", "Là cái có thể thỏa mãn nhu cầu nào đó cho con người", "Là những dạng vật chất hữu hình"],
+    c: 1
   },
   {
-    "q": "Thuộc tính cơ bản của hàng hóa là gì?",
-    "a": ["Giá trị", "Giá trị sử dụng", "Giá trị sử dụng và giá trị", "Giá trị, giá trị sử dụng và giá trị trao đổi"],
-    "c": 2
+    q: "Thuộc tính cơ bản của hàng hóa là gì?",
+    a: ["Giá trị", "Giá trị sử dụng", "Giá trị sử dụng và giá trị", "Giá trị, giá trị sử dụng và giá trị trao đổi"],
+    c: 2
   },
   {
-    "q": "Điền từ còn thiếu: “Giá trị của hàng hóa là lao động xã hội của người sản xuất ra hàng hóa (...) trong hàng hóa ấy”.",
-    "a": ["Kết tinh", "Tồn tại", "Tiêu hao", "Thể hiện"],
-    "c": 0
+    q: "Giá trị của hàng hóa là lao động xã hội của người sản xuất ra hàng hóa (...) trong hàng hóa ấy.",
+    a: ["Kết tinh", "Tồn tại", "Tiêu hao", "Thể hiện"],
+    c: 0
   },
   {
-    "q": "Điền từ còn thiếu: “Giá trị sử dụng của hàng hóa là (...) của sản phẩm, có thể (...) nhu cầu nào đó của con người”.",
-    "a": ["Công dụng/ thỏa mãn", "Tính năng/ đáp ứng", "Công dụng/ phục vụ", "Tác dụng/ đáp ứng"],
-    "c": 0
+    q: "Giá trị sử dụng của hàng hóa là (...) của sản phẩm, có thể (...) nhu cầu nào đó của con người.",
+    a: ["Công dụng/ thỏa mãn", "Tính năng/ đáp ứng", "Công dụng/ phục vụ", "Tác dụng/ đáp ứng"],
+    c: 0
   },
   {
-    "q": "Giá cả của hàng hóa là gì?",
-    "a": ["Quan hệ về số lượng giữa hàng và tiền", "Giá trị của hàng hóa", "Biểu hiện bằng tiền của giá trị hàng hóa", "Sự biểu hiện bằng tiền của giá trị sử dụng hàng hoá"],
-    "c": 2
+    q: "Giá cả của hàng hóa là gì?",
+    a: ["Quan hệ về số lượng giữa hàng và tiền", "Giá trị của hàng hóa", "Biểu hiện bằng tiền của giá trị hàng hóa", "Sự biểu hiện bằng tiền của giá trị sử dụng hàng hoá"],
+    c: 2
   },
   {
-    "q": "C. Mác cho rằng, các hàng hoá trao đổi được với nhau, bởi vì...",
-    "a": ["Đều là sản phẩm của lao động, kết tinh một lượng lao động xã hội bằng nhau", "Đều dựa trên hao phí lao động cá biệt để sản xuất ra hàng hóa", "Có lượng hao phí vật tư, kĩ thuật bằng nhau", "Đều có giá trị sử dụng ngang nhau"],
-    "c": 0
+    q: "C. Mác cho rằng, các hàng hoá trao đổi được với nhau, bởi vì...",
+    a: ["Đều là sản phẩm của lao động, kết tinh một lượng lao động xã hội bằng nhau", "Đều dựa trên hao phí lao động cá biệt để sản xuất ra hàng hóa", "Có lượng hao phí vật tư, kĩ thuật bằng nhau", "Đều có giá trị sử dụng ngang nhau"],
+    c: 0
   },
   {
-    "q": "Giá trị của hàng hóa chỉ được thực hiện khi nào?",
-    "a": ["Khi con người sử dụng hàng hóa đó", "Khi con người thực hiện xong quá trình trao đổi, mua bán hàng hóa", "Khi con người tạo ra hàng hóa đó", "Khi con người có sự trân trọng hàng hóa đó"],
-    "c": 1
+    q: "Giá trị của hàng hóa chỉ được thực hiện khi nào?",
+    a: ["Khi con người sử dụng hàng hóa đó", "Khi con người thực hiện xong quá trình trao đổi, mua bán hàng hóa", "Khi con người tạo ra hàng hóa đó", "Khi con người có sự trân trọng hàng hóa đó"],
+    c: 1
   },
   {
-    "q": "Giá trị sử dụng của hàng hóa được thực hiện khi nào?",
-    "a": ["Khi con người sử dụng hàng hóa đó", "Khi con người đem đi trao đổi, mua bán", "Khi con người tạo ra hàng hóa đó", "Khi con người đem tặng hàng hóa đó cho người khác"],
-    "c": 0
+    q: "Giá trị sử dụng của hàng hóa được thực hiện khi nào?",
+    a: ["Khi con người sử dụng hàng hóa đó", "Khi con người đem đi trao đổi, mua bán", "Khi con người tạo ra hàng hóa đó", "Khi con người đem tặng hàng hóa đó cho người khác"],
+    c: 0
   },
   {
-    "q": "Cơ sở để hàng hoá A có thể trao đổi được với hàng hoá B là...",
-    "a": ["Lượng lao động hao phí của hàng hoá A = hàng hoá B", "Lượng lao động hao phí của hàng hoá A > hàng hoá B", "Lượng lao động hao phí của hàng hoá A < hàng hoá B", "Giá trị sử dụng của hai hàng hóa bằng nhau"],
-    "c": 0
+    q: "Cơ sở để hàng hoá A có thể trao đổi được với hàng hoá B là...",
+    a: ["Lượng lao động hao phí của hàng hoá A = hàng hoá B", "Lượng lao động hao phí của hàng hoá A > hàng hoá B", "Lượng lao động hao phí của hàng hoá A < hàng hoá B", "Giá trị sử dụng của hai hàng hóa bằng nhau"],
+    c: 0
   },
   {
-    "q": "Số lượng các giá trị sử dụng của hàng hoá phụ thuộc vào nhân tố nào?",
-    "a": ["Những yếu tố điều kiện tự nhiên", "Trình độ khoa học công nghệ", "Chuyên môn hoá sản xuất", "Phong tục, tập quán"],
-    "c": 1
+    q: "Số lượng các giá trị sử dụng của hàng hoá phụ thuộc vào nhân tố nào?",
+    a: ["Những yếu tố điều kiện tự nhiên", "Trình độ khoa học công nghệ", "Chuyên môn hoá sản xuất", "Phong tục, tập quán"],
+    c: 1
   },
   {
-    "q": "Tại sao nói giá trị và giá trị sử dụng của hàng hóa có sự thống nhất với nhau?",
-    "a": ["Vì nó đều do con người tạo ra", "Vì nó đều cùng tồn tại trong một hàng hóa, nếu thiếu một trong hai thuộc tính thì sản phẩm không trở thành hàng hóa", "Vì nó không mâu thuẫn với nhau", "Vì nó đều giúp con người thỏa mãn nhu cầu của mình"],
-    "c": 1
+    q: "Tại sao nói giá trị và giá trị sử dụng của hàng hóa có sự thống nhất với nhau?",
+    a: ["Vì nó đều do con người tạo ra", "Vì nó đều cùng tồn tại trong một hàng hóa, nếu thiếu một trong hai thuộc tính thì sản phẩm không trở thành hàng hóa", "Vì nó không mâu thuẫn với nhau", "Vì nó đều giúp con người thỏa mãn nhu cầu của mình"],
+    c: 1
   },
   {
-    "q": "Biểu hiện mâu thuẫn của thuộc tính giá trị và giá trị sử dụng của hàng hóa là gì?",
-    "a": ["Vì giá trị của hàng hóa được tạo ra trước nhưng thực hiện sau", "Vì giá trị sử dụng của hàng hóa được tạo ra sau nhưng thực hiện trước", "Vì hai thuộc tính này gây ra phiền toái cho con người trong quá trình sử dụng", "Vì quá trình thực hiện giá trị và giá trị sử dụng của hàng hóa tách rời nhau về không gian và thời gian"],
-    "c": 3
+    q: "Biểu hiện mâu thuẫn của thuộc tính giá trị và giá trị sử dụng của hàng hóa là gì?",
+    a: ["Vì giá trị của hàng hóa được tạo ra trước nhưng thực hiện sau", "Vì giá trị sử dụng của hàng hóa được tạo ra sau nhưng thực hiện trước", "Vì hai thuộc tính này gây ra phiền toái cho con người trong quá trình sử dụng", "Vì quá trình thực hiện giá trị và giá trị sử dụng của hàng hóa tách rời nhau về không gian và thời gian"],
+    c: 3
   },
   {
-    "q": "Giá trị sử dụng của hàng hoá là phạm trù mang tính...",
-    "a": ["Vĩnh viễn", "Lịch sử", "Tất nhiên", "Ngẫu nhiên"],
-    "c": 0
+    q: "Giá trị sử dụng của hàng hoá là phạm trù mang tính...",
+    a: ["Vĩnh viễn", "Lịch sử", "Tất nhiên", "Ngẫu nhiên"],
+    c: 0
   },
   {
-    "q": "Lao động cụ thể là...",
-    "a": ["Sự tiêu hao sức lao động của người sản xuất hàng hóa nói chung", "Sự tiêu hao sức cơ bắp, thần kinh", "Lao động có ích dưới một hình thức cụ thể của những nghề nghiệp chuyên môn nhất định", "Lao động chuyên môn hóa"],
-    "c": 2
+    q: "Lao động cụ thể là...",
+    a: ["Sự tiêu hao sức lao động của người sản xuất hàng hóa nói chung", "Sự tiêu hao sức cơ bắp, thần kinh", "Lao động có ích dưới một hình thức cụ thể của những nghề nghiệp chuyên môn nhất định", "Lao động chuyên môn hóa"],
+    c: 2
   },
   {
-    "q": "Lao động trừu tượng là gì?",
-    "a": ["Lao động cụ thể của người sản xuất hàng hoá không kể đến những hình thức cụ thể", "Lao động phức tạp của người sản xuất hàng hoá", "Lao động cá biệt của người sản xuất hàng hoá", "Lao động xã hội của người sản xuất hàng họá không kể đến những hình thức cụ thể, là sự hao phí sức lao động về cơ bắp, thần kinh, trí óc"],
-    "c": 3
+    q: "Lao động trừu tượng là gì?",
+    a: ["Lao động cụ thể của người sản xuất hàng hoá không kể đến những hình thức cụ thể", "Lao động phức tạp của người sản xuất hàng hoá", "Lao động cá biệt của người sản xuất hàng hoá", "Lao động xã hội của người sản xuất hàng hoá không kể đến những hình thức cụ thể, là sự hao phí sức lao động về cơ bắp, thần kinh, trí óc"],
+    c: 3
   },
   {
-    "q": "Giá trị của hàng hoá là phạm trù mang tính...",
-    "a": ["Vĩnh viễn", "Lịch sử", "Tất nhiên", "Ngẫu nhiên"],
-    "c": 1
+    q: "Giá trị của hàng hoá là phạm trù mang tính...",
+    a: ["Vĩnh viễn", "Lịch sử", "Tất nhiên", "Ngẫu nhiên"],
+    c: 1
   },
   {
-    "q": "Lao động cụ thể tạo ra...",
-    "a": ["Giá trị của hàng hoá", "Giá trị sử dụng của hàng hoá", "Giá trị trao đổi của hàng hoá", "Giá trị cá biệt của hàng hoá"],
-    "c": 1
+    q: "Lao động cụ thể tạo ra...",
+    a: ["Giá trị của hàng hoá", "Giá trị sử dụng của hàng hoá", "Giá trị trao đổi của hàng hoá", "Giá trị cá biệt của hàng hoá"],
+    c: 1
   },
   {
-    "q": "Lao động trừu tượng là cơ sở và nguồn gốc của...",
-    "a": ["Giá trị hàng hóa", "Giá trị sử dụng của hàng hóa", "Số lượng công dụng của hàng hóa", "Tất cả đáp án đều sai"],
-    "c": 0
+    q: "Lao động trừu tượng là cơ sở và nguồn gốc của...",
+    a: ["Giá trị hàng hóa", "Giá trị sử dụng của hàng hóa", "Số lượng công dụng của hàng hóa", "Tất cả đáp án đều sai"],
+    c: 0
   },
   {
-    "q": "Chọn phương án đúng nhất: Hàng hoá có hai thuộc tính giá trị và giá trị sử dụng, bởi vì...",
-    "a": ["Lao động sản xuất hàng hoá có tính hai mặt: lao động cụ thể và lao động trừu tượng", "Lao động sản xuất hàng hoá có mục đích để trao đổi, mua bán", "Lao động sản xuất hàng hoá có hai loại lao động phức tạp và lao động giản đơn", "Lao động sản xuất hàng hoá có tính chất tư nhân và xã hội"],
-    "c": 0
+    q: "Hàng hoá có hai thuộc tính giá trị và giá trị sử dụng, bởi vì...",
+    a: ["Lao động sản xuất hàng hoá có tính hai mặt: lao động cụ thể và lao động trừu tượng", "Lao động sản xuất hàng hoá có mục đích để trao đổi, mua bán", "Lao động sản xuất hàng hoá có hai loại lao động phức tạp và lao động giản đơn", "Lao động sản xuất hàng hoá có tính chất tư nhân và xã hội"],
+    c: 0
   },
   {
-    "q": "Mâu thuẫn cơ bản của lao động sản xuất hàng hóa là:",
-    "a": ["Mâu thuẫn giữa lao động tư nhân và lao động xã hội", "Mâu thuẫn giữa giá trị sử dụng và giá trị của hàng hóa", "Mâu thuẫn giữa giá trị và giá cả hàng hóa", "Mâu thuẫn giai cấp bị trị và giai cấp thống trị"],
-    "c": 0
+    q: "Mâu thuẫn cơ bản của lao động sản xuất hàng hóa là:",
+    a: ["Mâu thuẫn giữa lao động tư nhân và lao động xã hội", "Mâu thuẫn giữa giá trị sử dụng và giá trị của hàng hóa", "Mâu thuẫn giữa giá trị và giá cả hàng hóa", "Mâu thuẫn giai cấp bị trị và giai cấp thống trị"],
+    c: 0
   },
   {
-    "q": "Lượng giá trị xã hội của hàng hóa được quyết định bởi?",
-    "a": ["Thời gian lao động thặng dư của người sản xuất hàng hóa", "Hao phí lao động sống của người sản xuất ra hàng hóa", "Thời gian lao động xã hội cần thiết để sản xuất ra hàng hóa", "Thời gian lao động cá biệt để sản xuất ra hàng hóa"],
-    "c": 2
+    q: "Lượng giá trị xã hội của hàng hóa được quyết định bởi?",
+    a: ["Thời gian lao động thặng dư của người sản xuất hàng hóa", "Hao phí lao động sống của người sản xuất ra hàng hóa", "Thời gian lao động xã hội cần thiết để sản xuất ra hàng hóa", "Thời gian lao động cá biệt để sản xuất ra hàng hóa"],
+    c: 2
   },
   {
-    "q": "Thời gian lao động cá biệt là gì?",
-    "a": ["Là thời gian để tạo ra một hàng hóa", "Là thời gian để tạo ra một hàng hóa của từng chủ thể sản xuất", "Là thời gian lao động trung bình của xã hội", "Là khoảng thời gian lao động thấp hơn mức cần thiết"],
-    "c": 1
+    q: "Thời gian lao động cá biệt là gì?",
+    a: ["Là thời gian để tạo ra một hàng hóa", "Là thời gian để tạo ra một hàng hóa của từng chủ thể sản xuất", "Là thời gian lao động trung bình của xã hội", "Là khoảng thời gian lao động thấp hơn mức cần thiết"],
+    c: 1
   },
   {
-    "q": "Điền từ thích hợp: “Thời gian lao động xã hội cần thiết là thời gian để sản xuất trong những điều kiện (...1...) với trình độ (...2...) trung bình, cường độ lao động (...3...)”",
-    "a": ["(1) tốt, (2) thành thạo, (3) tốt", "(1) trung bình, (2) thành thạo, (3) trung bình", "(1) bình thường, (2) thành thạo, (3) trung bình", "(1) xấu, (2) trung bình, (3) xấu"],
-    "c": 2
+    q: "Thời gian lao động xã hội cần thiết là thời gian đòi hỏi để sản xuất ra một giá trị sử dụng nào đó trong những điều kiện (1) của xã hội với trình độ (2) trung bình, cường độ lao động (3)",
+    a: ["(1) tốt, (2) thành thạo, (3) tốt", "(1) trung bình, (2) thành thạo, (3) trung bình", "(1) bình thường, (2) thành thạo, (3) trung bình", "(1) xấu, (2) trung bình, (3) xấu"],
+    c: 2
   },
   {
-    "q": "Năng suất lao động là...",
-    "a": ["Năng lực sản xuất của người lao động, tính bằng sản phẩm/thời gian hoặc ngược lại", "Số lượng sản phẩm sản xuất ra trong một đơn vị thời gian", "Trình độ tiên tiến và mức độ trang bị kĩ thuật", "Mức độ khẩn trương, tích cực của hoạt động lao động"],
-    "c": 0
+    q: "Năng suất lao động là...",
+    a: ["Năng lực sản xuất của người lao động, tính bằng sản phẩm/thời gian hoặc thời gian/sản phẩm", "Số lượng sản phẩm sản xuất ra trong một đơn vị thời gian", "Trình độ tiên tiến và mức độ trang bị kĩ thuật", "Mức độ khẩn trương, tích cực của hoạt động lao động"],
+    c: 0
   },
   {
-    "q": "Chọn đáp án đúng nhất điền vào chỗ trống: “Cường độ lao động là mức độ (...) của hoạt động lao động trong sản xuất”.",
-    "a": ["Khẩn trương, tích cực", "Áp lực", "Nặng nhọc", "Căng thẳng"],
-    "c": 0
+    q: "Cường độ lao động là mức độ (...) của hoạt động lao động trong sản xuất.",
+    a: ["Khẩn trương, tích cực", "Áp lực", "Nặng nhọc", "Căng thăng"],
+    c: 0
   },
   {
-    "q": "Lao động giản đơn là gì?",
-    "a": ["Là lao động làm công việc đơn giản", "Là lao động làm ra các hàng hóa có giá trị thấp", "Là lao động không phải qua đào tạo một cách hệ thống, chuyên sâu vẫn thao tác được", "Là lao động không cần đến máy móc hỗ trợ"],
-    "c": 2
+    q: "Lao động giản đơn là gì?",
+    a: ["Là lao động làm công việc đơn giản", "Là lao động làm ra các hàng hóa có giá trị thấp", "Là lao động không phải qua đào tạo một cách hệ thống, chuyên sâu cũng có thể thao tác được", "Là lao động không cần đến máy móc hỗ trợ"],
+    c: 2
   },
   {
-    "q": "Lao động phức tạp là gì?",
-    "a": ["Là lao động được thực hiện bởi nhiều thao tác phức tạp", "Là lao động phải trải qua đào tạo về kỹ năng, nghiệp vụ theo yêu cầu chuyên môn", "Là lao động tạo ra những hàng hóa có giá trị cao", "Là lao động được xã hội coi trọng"],
-    "c": 1
+    q: "Lao động phức tạp là gì?",
+    a: ["Là lao động được thực hiện bởi nhiều thao tác phức tạp", "Là lao động phải trải qua đào tạo về kỹ năng, nghiệp vụ theo yêu cầu nghề nghiệp chuyên môn", "Là lao động tạo ra những hàng hóa có giá trị cao", "Là lao động được xã hội coi trọng"],
+    c: 1
   },
   {
-    "q": "Lượng giá trị của đơn vị hàng hóa:",
-    "a": ["Tỷ lệ thuận với năng suất lao động", "Tỷ lệ nghịch với cường độ lao động", "Tỷ lệ nghịch với năng suất lao động", "Tỷ lệ thuận với cường độ lao động"],
-    "c": 2
+    q: "Lượng giá trị của đơn vị hàng hóa:",
+    a: ["Tỷ lệ thuận với năng suất lao động", "Tỷ lệ nghịch với cường độ lao động", "Tỷ lệ nghịch với năng suất lao động", "Tỷ lệ thuận với cường độ lao động"],
+    c: 2
   },
   {
-    "q": "Nội dung nào dưới đây là biện pháp để tăng cường độ lao động?",
-    "a": ["Tăng mức độ khẩn trương của lao động", "Tăng mức độ nặng nhọc của lao động", "Kéo dài thời gian lao động", "Cả 3 đáp án đều đúng"],
-    "c": 0
+    q: "Nội dung nào dưới đây là biện pháp để tăng cường độ lao động?",
+    a: ["Tăng mức độ khẩn trương của lao động", "Tăng mức độ nặng nhọc của lao động", "Kéo dài thời gian lao động", "Cả 3 đáp án đều đúng"],
+    c: 3
   },
   {
-    "q": "Nhân tố ảnh hưởng đến lượng giá trị hàng hóa là...",
-    "a": ["Năng suất lao động", "Cường độ lao động", "Mức độ phức tạp của lao động", "Cả 3 đáp án đúng"],
-    "c": 3
+    q: "Nhân tố ảnh hưởng đến lượng giá trị hàng hóa là...",
+    a: ["Năng suất lao động", "Cường độ lao động", "Mức độ phức tạp của lao động", "Cả 3 đáp án đúng"],
+    c: 3
   },
   {
-    "q": "Khi năng suất lao động tăng lên thì...",
-    "a": ["Tổng số sản phẩm tăng và lượng giá trị trong một đơn vị hàng hoá giảm", "Tổng số sản phẩm giảm và lượng giá trị trong một đơn vị hàng hoá tăng", "Tổng số sản phẩm tăng và lượng giá trị trong một đơn vị hàng hoá tăng", "Tổng số sản phẩm giảm và lượng giá trị trong một đơn vị hàng hoá giảm"],
-    "c": 0
+    q: "Khi năng suất lao động tăng lên thì...",
+    a: ["Tông số sản phẩm tăng và lượng giá trị trong một đơn vị hàng hoá giảm", "Tổng số sản phẩm giảm và lượng giá trị trong một đơn vị hàng hoá tăng", "Tổng số sản phẩm tăng và lượng giá trị trong một đơn vị hàng hoá tăng", "Tổng số sản phẩm giảm và lượng giá trị trong một đơn vị hàng hoá giảm"],
+    c: 0
   },
   {
-    "q": "Chọn phương án đúng nhất: Việc tăng năng suất lao động ảnh hưởng như thế nào?",
-    "a": ["Tổng số sản phẩm tăng, tổng giá trị sản phẩm không đổi và lượng giá trị đơn vị giảm", "Tổng số sản phẩm tăng, tổng giá trị sản phẩm tăng và lượng giá trị đơn vị giảm", "Tổng số sản phẩm tăng, tổng giá trị sản phẩm giảm và lượng giá trị đơn vị giảm", "Tổng số sản phẩm tăng, tổng giá trị sản phẩm không đổi và lượng giá trị đơn vị tăng"],
-    "c": 0
+    q: "Việc tăng năng suất lao động ảnh hưởng như thế nào?",
+    a: ["Tổng số sản phẩm tăng, tổng giá trị sản phẩm không đổi và lượng giá trị trong một đơn vị hàng hoá giảm", "Tổng số sản phẩm tăng, tổng giá trị sản phẩm tăng và lượng giá trị trong một đơn vị hàng hoá giảm", "Tổng số sản phẩm tăng, tổng giá trị sản phẩm giảm và lượng giá trị trong một đơn vị hàng hoá giảm", "Tổng số sản phẩm tăng, tổng giá trị sản phẩm không đổi và lượng giá trị trong một đơn vị hàng hoá tăng"],
+    c: 0
   },
   {
-    "q": "Khi năng suất lao động tăng lên 2 lần thì...",
-    "a": ["Tổng số sản phẩm và lượng giá trị đơn vị cùng tăng lên 2 lần", "Tổng số lượng sản phẩm tăng lên 2 lần và lượng giá trị đơn vị giảm xuống 2 lần", "Tổng số sản phẩm và lượng giá trị đơn vị cùng giảm xuống 2 lần", "Tổng số sản phẩm giảm xuống 2 lần và lượng giá trị đơn vị cũng tăng lên 2 lần"],
-    "c": 1
+    q: "Khi năng suất lao động tăng lên 2 lần thì...",
+    a: ["Tổng số sản phẩm và lượng giá trị trong một đơn vị hàng hoá cùng tăng lên 2 lần", "Tổng số lượng sản phẩm tăng lên 2 lần và lượng giá trị trong một đơn vị hàng hoá giảm xuống 2 lần", "Tổng số sản phẩm và lượng giá trị trong một đơn vị hàng hoá cùng giảm xuống 2 lần", "Tổng số sản phẩm giảm xuống 2 lần và lượng giá trị đơn vị tăng 2 lần"],
+    c: 1
   },
   {
-    "q": "Khi tăng cường độ lao động lên 2 lần thì các nhân tố khác như thế nào?",
-    "a": ["Tổng số sản phẩm và lượng giá trị đơn vị cùng tăng lên 2 lần", "Tổng số sản phẩm tăng lên 2 lần và lượng giá trị đơn vị giảm xuống 2 lần", "Tổng số sản phẩm và lượng giá trị đơn vị không đổi", "Tổng số sản phẩm và tổng lượng giá trị tăng 2 lần nhưng lượng giá trị đơn vị không đổi"],
-    "c": 3
+    q: "Khi tăng cường độ lao động lên 2 lần thì các nhân tố khác như thế nào?",
+    a: ["Tổng số sản phẩm và lượng giá trị trong một đơn vị hàng hoá cùng tăng lên 2 lần", "Tổng số sản phẩm tăng lên 2 lần và lượng giá trị trong một đơn vị hàng hoá giảm xuống 2 lần", "Tổng số sản phẩm và lượng giá trị trong một đơn vị hàng hoá không đổi", "Tổng số sản phẩm và tổng lượng giá trị tăng 2 lần nhưng lượng giá trị đơn vị không đổi"],
+    c: 3
   },
   {
-    "q": "Điểm giống nhau khi tăng năng suất lao động và cường độ lao động là gì?",
-    "a": ["Tổng số sản phẩm tăng", "Lượng giá trị trong một đơn vị hàng hoá tăng", "Lượng giá trị trong một đơn vị hàng hoá không đổi", "Lượng giá trị trong một đơn vị hàng hoá giảm"],
-    "c": 0
+    q: "Điểm giống nhau khi tăng năng suất lao động và cường độ lao động là gì?",
+    a: ["Tổng số sản phẩm tăng", "Lượng giá trị trong một đơn vị hàng hoá tăng", "Lượng giá trị trong một đơn vị hàng hoá không đổi", "Lượng giá trị trong một đơn vị hàng hoá giảm"],
+    c: 0
   },
   {
-    "q": "Khi đồng thời tăng năng suất lao động và cường độ lao động lên 2 lần thì...",
-    "a": ["Tổng số sản phẩm tăng lên 4 lần, tổng giá trị sản phẩm tăng 2 lần", "Tổng số sản phẩm tăng 2 lần, tổng giá trị sản phẩm tăng lên 2 lần", "Lượng giá trị đơn vị giảm 2 lần, tổng giá trị sản phẩm tăng 2 lần", "Tổng số sản phẩm tăng 2 lần, lượng giá trị đơn vị giảm 2 lần"],
-    "c": 0
+    q: "Khi đồng thời tăng năng suất lao động và cường độ lao động lên 2 lần thì...",
+    a: ["Tổng số sản phẩm tăng lên 4 lần, tổng giá trị sản phẩm tăng 2 lần", "Tổng số sản phẩm tăng 2 lần, tổng giá trị sản phẩm tăng lên 2 lần", "Lượng giá trị đơn vị giảm 2 lần, tổng giá trị tăng 2 lần", "Tổng số sản phẩm tăng 2 lần, lượng giá trị đơn vị giảm 2 lần"],
+    c: 0
   },
   {
-    "q": "Nhân tố cơ bản, lâu dài để tăng sản phẩm cho xã hội là...",
-    "a": ["Tăng năng suất lao động", "Tăng số người lao động", "Tăng cường độ lao động", "Kéo dài thời gian lao động"],
-    "c": 0
+    q: "Nhân tố cơ bản, lâu dài để tăng sản phẩm cho xã hội là...",
+    a: ["Tăng năng suất lao động", "Tăng số người lao động", "Tăng cường độ lao động", "Kéo dài thời gian lao động"],
+    c: 0
   },
   {
-    "q": "Tiền tệ ra đời là kết quả của quá trình nào?",
-    "a": ["Quá trình mua bán, trao đổi quốc tế", "Quá trình hình thành nhà nước", "Quá trình trao đổi trực tiếp, ngẫu nhiên hàng hóa", "Quá trình phát triển của sản xuất và trao đổi hàng hoá"],
-    "c": 3
+    q: "Tiền tệ ra đời là kết quả của quá trình nào?",
+    a: ["Quá trình mua bán, trao đổi quốc tế", "Quá trình hình thành nhà nước", "Quá trình trao đổi trực tiếp, ngẫu nhiên", "Quá trình phát triển của sản xuất và trao đổi hàng hoá"],
+    c: 3
   },
   {
-    "q": "Hình thái giá trị đầu tiên của tiền tệ là...",
-    "a": ["Hình thái giá trị giản đơn hay ngẫu nhiên", "Hình thái mở rộng của giá trị", "Hình thái chung của giá trị", "Hình thái tiền tệ"],
-    "c": 0
+    q: "Hình thái giá trị đầu tiên của tiền tệ là...",
+    a: ["Hình thái giá trị giản đơn hay ngẫu nhiên", "Hình thái mở rộng của giá trị", "Hình thái chung của giá trị", "Hình thái tiền tệ"],
+    c: 0
   },
   {
-    "q": "Khi sản xuất và trao đổi hàng hoá phát triển đòi hỏi vật ngang giá chung xuất hiện ở hình thái nào?",
-    "a": ["Hình thái giá trị giản đơn hay ngẫu nhiên", "Hình thái mở rộng của giá trị", "Hình thái chung của giá trị", "Hình thái tiền tệ"],
-    "c": 2
+    q: "Khi sản xuất và trao đổi hàng hoá phát triển đòi hỏi phải có một vật ngang giá chung xuất hiện ở hình thái nào?",
+    a: ["Hình thái giá trị giản đơn hay ngẫu nhiên", "Hình thái mở rộng của giá trị", "Hình thái chung của giá trị", "Hình thái tiền tệ"],
+    c: 2
   },
   {
-    "q": "Bản chất của tiền là gì?",
-    "a": ["Là loại hàng hoá đặc biệt, làm vật ngang giá chung và phản ánh lao động xã hội", "Là loại hàng hoá đặc biệt, làm vật ngang giá chung và phản ánh lao động tư nhân", "Là loại hàng hoá đặc biệt, làm vật ngang giá chung và phản ánh lao động cá biệt", "Là loại hàng hoá đặc biệt, làm vật ngang giá chung và phản ánh lao động thủ công"],
-    "c": 0
+    q: "Bản chất của tiền là gì?",
+    a: ["Là loại hàng hoá đặc biệt, làm vật ngang giá chung cho thế giới hàng hoá và phản ánh lao động xã hội", "Là loại hàng hoá đặc biệt, làm vật ngang giá chung và phản ánh lao động tư nhân", "Là loại hàng hoá đặc biệt, làm vật ngang giá chung và phản ánh lao động cá biệt", "Là loại hàng hoá đặc biệt, làm vật ngang giá chung và phản ánh lao động thủ công"],
+    c: 0
   },
   {
-    "q": "Tiền tệ có các chức năng sau đây:...",
-    "a": ["Thước đo giá trị, lưu thông, cất trữ, môi giới, thế giới", "Thước đo giá trị, giao thông, cất trữ, thanh toán, thế giới", "Thước đo giá trị, phương tiện lưu thông, cất trữ, thanh toán, tiền tệ thế giới", "Thước đo giá trị, trao đổi, cất trữ, thanh toán, tiền tệ thế giới"],
-    "c": 2
+    q: "Tiền tệ có các chức năng sau đây:...",
+    a: ["Thước đo giá trị, phương tiện lưu thông, phương tiện cất trữ, phương tiện môi giới, tiền tệ thế giới", "Thước đo giá trị, phương tiện giao thông, phương tiện cất trữ, phương tiện thanh toán, tiền tệ thế giới", "Thước đo giá trị, phương tiện lưu thông, phương tiện cất trữ, phương tiện thanh toán, tiền tệ thế giới", "Thước đo giá trị, phương tiện trao đổi, phương tiện cất trữ, phương tiện thanh toán, tiền tệ thế giới"],
+    c: 2
   },
   {
-    "q": "Thực hiện chức năng thước đo giá trị, tiền được dùng để... ",
-    "a": ["Làm phương tiện mua hàng hoá", "Đo lường giá trị của các hàng hoá khác", "Làm phương tiện nộp thuế", "Làm phương tiện trả nợ"],
-    "c": 1
+    q: "Thực hiện chức năng thước đo giá trị, tiền được dùng để...",
+    a: ["Làm phương tiện mua hàng hoá", "Đo lường giá trị của các hàng hoá khác", "Làm phương tiện nộp thuế", "Làm phương tiện trả nợ"],
+    c: 1
   },
   {
-    "q": "Tiền được dùng làm gì khi thực hiện chức năng phương tiện lưu thông?",
-    "a": ["Thanh toán", "Môi giới trong quá trình trao đổi hàng hoá", "Nộp thuế", "Trả nợ"],
-    "c": 1
+    q: "Tiền được dùng làm gì khi thực hiện chức năng phương tiện lưu thông?",
+    a: ["Thanh toán", "Môi giới trong quá trình trao đổi hàng hoá", "Nộp thuế", "Trả nợ"],
+    c: 1
   },
   {
-    "q": "Thực hiện chức năng phương tiện thanh toán, tiền được dùng để...",
-    "a": ["Môi giới trong quá trình trao đổi hàng hoá", "Trả nợ, nộp thuế, trả tiền mua hàng chịu...", "Làm phương tiện mua hàng", "Đo lường giá trị các hàng hoá"],
-    "c": 1
+    q: "Thực hiện chức năng phương tiện thanh toán, tiền được dùng để...",
+    a: ["Môi giới trong quá trình trao đổi hàng hoá", "Trả nợ, nộp thuế, trả tiền mua hàng chịu...", "Làm phương tiện mua hàng", "Đo lường giá trị các hàng hoá"],
+    c: 1
   },
   {
-    "q": "Tiền được dùng làm gì khi thực hiện chức năng tiền tệ thế giới?",
-    "a": ["Phương tiện mua bán", "Di chuyển của cải", "Mua bán, thanh toán quốc tế", "Đo lường giá trị các hàng hoá"],
-    "c": 2
+    q: "Tiền được dùng làm gì khi thực hiện chức năng tiền tệ thế giới?",
+    a: ["Phương tiện mua bán", "Di chuyên của cải", "Mua bán, thanh toán quốc tế", "Đo lường giá trị các hàng hoá"],
+    c: 2
   },
   {
-    "q": "Tại sao nói tiền tệ là một loại hàng hóa đặc biệt?",
-    "a": ["Vì tiền được tạo ra từ những chất liệu đặc biệt", "Vì tiền được chọn là vật ngang giá chung cho tất cả các hàng hóa khác", "Vì tiền thường xuyên xuất hiện trong quá trình lưu thông hàng hóa", "Vì tiền thúc đẩy quá trình trao đổi, mua bán diễn ra thuận lợi hơn"],
-    "c": 1
+    q: "Tại sao nói tiền tệ là một loại hàng hóa đặc biệt?",
+    a: ["Vì tiền được tạo ra từ những chất liệu đặc biệt", "Vì tiền được chọn là vật ngang giá chung cho tất cả các hàng hóa khác", "Vì tiền thường xuyên xuất hiện trong quá trình lưu thông", "Vì tiền thúc đẩy quá trình trao đổi diễn ra thuận lợi hơn"],
+    c: 1
   },
   {
-    "q": "Chọn phương án đúng nhất: Thực hiện chức năng tiền tệ thế giới, tiền phải đáp ứng yêu cầu...",
-    "a": ["Không đủ giá trị, tiền vàng hoặc tiền được quốc tế công nhận", "Có đủ giá trị, tiền vàng hoặc những đồng tiền được công nhận là phương tiện thanh toán quốc tế", "Đủ giá trị, tiền bạc hoặc tiền được quốc tế công nhận", "Đủ giá trị, tiền vàng hoặc tiền không được quốc tế công nhận"],
-    "c": 1
+    q: "Thực hiện chức năng tiền tệ thế giới, tiền phải đáp ứng yêu cầu...",
+    a: ["Không đủ giá trị, tiền vàng hoặc tiền thanh toán quốc tế", "Có đủ giá trị, tiền vàng hoặc tiền được công nhận là phương tiện thanh toán quốc tế", "Đủ giá trị, tiền bạc hoặc tiền thanh toán quốc tế", "Đủ giá trị, tiền vàng hoặc tiền không thanh toán quốc tế"],
+    c: 1
   },
   {
-    "q": "Hàng hoá vô hình có những đặc điểm nào?",
-    "a": ["Không cất trữ được, sản xuất và tiêu dùng diễn ra đồng thời", "Cất trữ được, sản xuất và tiêu dùng diễn ra đồng thời", "Không cất trữ được, sản xuất và tiêu dùng tách rời nhau", "Cất trữ được, sản xuất và tiêu dùng tách rời nhau"],
-    "c": 0
+    q: "Hàng hoá vô hình có những đặc điểm nào?",
+    a: ["Không cất trữ được, sản xuất và tiêu dùng diễn ra đồng thời", "Cất trữ được, sản xuất và tiêu dùng diễn ra đồng thời", "Không cất trữ được, sản xuất và tiêu dùng tách rời nhau", "Cất trữ được, sản xuất và tiêu dùng tách rời nhau"],
+    c: 0
   },
   {
-    "q": "Trong điều kiện kinh tế thị trường hiện nay, một số hàng hoá có quan hệ trao đổi khác thông thường là...",
-    "a": ["Quyền sử dụng đất đai, thương hiệu và hàng hoá tư liệu sản xuất", "Thương hiệu, hàng hoá tư liệu tiêu dùng, chứng khoán", "Quyền sử dụng đất đai, thương hiệu, chứng khoán và một số giấy tờ có giá khác", "Quyền sử dụng đất đai, thương hiệu, chứng khoán, hàng hoá nông phẩm"],
-    "c": 2
+    q: "Trong điều kiện nền kinh tế thị trường hiện nay, một số hàng hoá có quan hệ trao đổi khác với hàng hóa thông thường là...",
+    a: ["Quyền sử dụng đất đai, thương hiệu và hàng hoá tư liệu sản xuất", "Thương hiệu, tư liệu tiêu dùng, chứng khoán", "Quyền sử dụng đất đai, thương hiệu, chứng khoán và một số giấy tờ có giá khác", "Quyền sử dụng đất đai, thương hiệu, chứng khoán, hàng hoá nông phẩm"],
+    c: 2
   },
   {
-    "q": "Điền vào chỗ trống: “Thị trường là tổng hòa những (...) kinh tế, trong đó nhu cầu của các chủ thể được đáp ứng thông qua trao đổi, mua bán...”.",
-    "a": ["Quan hệ", "Hoạt động", "Hiện tượng", "Mối liên hệ"],
-    "c": 0
+    q: "Thị trường là tổng hòa những (...) kinh tế, trong đó nhu cầu của các chủ thể được đáp ứng thông qua việc trao đổi, mua bán...",
+    a: ["Quan hệ", "Hoạt động", "Hiện tượng", "Mối liên hệ"],
+    c: 0
   },
   {
-    "q": "Căn cứ vào vai trò của các yếu tố được trao đổi, người ta phân chia thị trường thành:",
-    "a": ["Thị trường trong nước và thị trường thế giới", "Thị trường các yếu tố đầu vào và thị trường các yếu tố đầu ra", "Thị trường tư liệu sản xuất và thị trường tư liệu tiêu dùng", "Thị trường tự do, có điều tiết, cạnh tranh hoàn hảo và độc quyền"],
-    "c": 1
+    q: "Căn cứ vào vai trò của các yếu tố được đem ra trao đổi, mua bán, người ta có thể phân chia thị trường thành:",
+    a: ["Thị trường trong nước và thị trường thế giới", "Thị trường các yếu tố đầu vào và thị trường các yếu tố đầu ra", "Thị trường tư liệu sản xuất và thị trường tư liệu tiêu dùng", "Thị trường tự do, có điều tiết, cạnh canh hoàn hảo và độc quyền"],
+    c: 1
   },
   {
-    "q": "Để các quan hệ sản xuất, lưu thông, phân phối, tiêu dùng trở thành một thể thống nhất trong quốc gia, cần phát huy vai trò của:",
-    "a": ["Nhà nước", "Thị trường", "Tiền tệ", "Hàng hóa"],
-    "c": 1
+    q: "Để các quan hệ sản xuất, lưu thông, phân phối, tiêu dùng trở thành một thể thống nhất trong phạm vi quốc gia, cần phát huy vai trò của:",
+    a: ["Nhà nước", "Thị trường", "Tiền tệ", "Hàng hóa"],
+    c: 1
   },
   {
-    "q": "Cơ chế thị trường là hệ thống các quan hệ kinh tế mang đặc tính (...)",
-    "a": ["Áp đặt", "Tự điều chỉnh", "Ngẫu nhiên", "Tự phát"],
-    "c": 1
+    q: "Cơ chế thị trường là hệ thống các quan hệ kinh tế mang đặc tính (...) theo yêu cầu của các quy luật kinh tế.",
+    a: ["Áp đặt", "Tự điều chỉnh", "Ngẫu nhiên", "Tự phát"],
+    c: 1
   },
   {
-    "q": "Cơ chế thị trường được sinh ra từ đâu?",
-    "a": ["Nhà nước", "Nền sản xuất hàng hóa", "Nền sản xuất tự nhiên", "Người sản xuất"],
-    "c": 1
+    q: "Cơ chế thị trường được sinh ra từ đâu?",
+    a: ["Nhà nước", "Nền sản xuất hàng hóa", "Nên sản xuất tự nhiên", "Người sản xuất"],
+    c: 1
   },
   {
-    "q": "Sản xuất và lưu thông hàng hoá chịu sự chi phối của những quy luật kinh tế nào?",
-    "a": ["Quy luật giá trị", "Quy luật cạnh tranh và quy luật cung cầu", "Quy luật lưu thông tiền tệ", "Tất cả các đáp án đúng"],
-    "c": 3
+    q: "Sản xuất và lưu thông hàng hoá chịu sự chi phối của những quy luật kinh tế nào?",
+    a: ["Quy luật giá trị", "Quy luật cạnh tranh và quy luật cung cầu", "Quy luật lưu thông tiền tệ", "Tất cả các đáp án đúng"],
+    c: 3
   },
   {
-    "q": "Nội dung của quy luật giá trị là gì?",
-    "a": ["Việc sản xuất hàng hóa phải tiến hành trên cơ sở hao phí lao động xã hội cần thiết", "Việc trao đổi hàng hóa phải tiến hành trên cơ sở hao phí lao động xã hội cần thiết", "Việc sản xuất và trao đổi hàng hóa phải tiến hành trên cơ sở hao phí lao động xã hội cần thiết", "Việc sản xuất và trao đổi phải tiến hành trên cơ sở hao phí lao động cá biệt"],
-    "c": 2
+    q: "Nội dung của quy luật giá trị là gì?",
+    a: ["Việc sản xuất hàng hóa phải dựa trên hao phí lao động xã hội cần thiết", "Việc trao đổi hàng hóa phải dựa trên hao phí lao động xã hội cần thiết", "Việc sản xuất và trao đổi hàng hóa phải dựa trên hao phí lao động xã hội cần thiết", "Việc sản xuất và trao đổi phải dựa trên hao phí lao động cá biệt"],
+    c: 2
   },
   {
-    "q": "Điền từ: “Cạnh tranh là sự ganh đua giữa những (...) với nhau nhằm thu lợi ích tối đa”",
-    "a": ["Người mua và người bán", "Nhà sản xuất và người tiêu dùng", "Chủ thể kinh tế", "Người sản xuất"],
-    "c": 2
+    q: "Cạnh tranh là sự ganh đua giữa những (...) với nhau nhằm có được những ưu thế về sản xuất cũng như tiêu thụ và thu lợi ích tối đa",
+    a: ["Người mua và người bán", "Nhà sản xuất và người tiêu dùng", "Chủ thể kinh tế", "Người sản xuất"],
+    c: 2
   },
   {
-    "q": "Vai trò của thị trường là...",
-    "a": ["Thực hiện giá trị hàng hóa, là môi trường cho sản xuất phát triển", "Kích thích sáng tạo, tạo cách thức phân bổ nguồn lực hiệu quả", "Gắn kết nền kinh tế thành một chỉnh thể quốc gia và thế giới", "Tất cả các đáp án đều đúng"],
-    "c": 3
+    q: "Vai trò của thị trường là...",
+    a: ["Thực hiện giá trị hàng hóa, là môi trường cho sản xuất phát triển", "Kích thích sự sáng tạo, phân bổ nguồn lực hiệu quả", "Gắn kết nền kinh tế quốc gia với thế giới", "Tất cả các đáp án đều đúng"],
+    c: 3
   },
   {
-    "q": "Điền từ: “Nền kinh tế thị trường là nền kinh tế được vận hành theo (...). ... mọi quan hệ được thông qua (...)”.",
-    "a": ["Cơ chế thị trường/ sự quản lý của nhà nước", "Cơ chế thị trường/ thị trường", "Quy luật kinh tế/ thị trường", "Quy luật kinh tế/ sự điều tiết của nhà nước"],
-    "c": 1
+    q: "Nền kinh tế thị trường là nền kinh tế được vận hành theo (...). chịu sự tác động, điều tiết của các quy luật thị trường.",
+    a: ["Cơ chế thị trường/ sự quản lý của nhà nước", "Cơ chế thị trường/ thị trường", "Quy luật kinh tế/ thị trường", "Quy luật kinh tế/ sự điều tiết của nhà nước"],
+    c: 1
   },
   {
-    "q": "Vị trí của quy luật giá trị trong nền sản xuất hàng hóa?",
-    "a": ["Là quy luật kinh tế khách quan của nền sản xuất hàng hóa", "Là quy luật kinh tế cơ bản của sản xuất và trao đổi hàng hóa", "Là quy luật kinh tế chung của mọi nền sản xuất", "Là quy luật kinh tế cá biệt của nền sản xuất hàng hóa"],
-    "c": 1
+    q: "Vị trí của quy luật giá trị trong nền sản xuất hàng hóa?",
+    a: ["Là quy luật kinh tế khách quan của nền sản xuất hàng hóa", "Là quy luật kinh tế cơ bản của sản xuất và trao đổi hàng hóa", "Là quy luật kinh tế chung của mọi nền sản xuất", "Là quy luật kinh tế cá biệt của nền sản xuất hàng hóa"],
+    c: 1
   },
   {
-    "q": "Đâu là biểu hiện của việc vi phạm quy luật giá trị trong nền kinh tế thị trường?",
-    "a": ["Hàng hóa được tạo ra quá nhiều", "Hàng hóa trao đổi không theo nguyên tắc ngang giá", "Quá trình tạo ra hàng hóa không áp dụng khoa học công nghệ", "Hàng hóa bị người tiêu dùng tẩy chay"],
-    "c": 1
+    q: "Đâu là biểu hiện của việc vi phạm quy luật giá trị trong nền kinh tế thị trường?",
+    a: ["Hàng hóa được tạo ra quá nhiều", "Hàng hóa trao đổi không theo nguyên tắc ngang giá", "Quá trình sản xuất không áp dụng khoa học công nghệ", "Hàng hóa bị người tiêu dùng tẩy chay"],
+    c: 1
   },
   {
-    "q": "Cơ sở hình thành giá cả hàng hóa là...",
-    "a": ["Giá trị của hàng hoá", "Giá trị sử dụng của hàng hoá", "Cả giá trị và giá trị sử dụng của hàng hóa", "Giá trị trao đổi của hàng hóa"],
-    "c": 0
+    q: "Cơ sở hình thành giá cả hàng hóa là...",
+    a: ["Giá trị của hàng hoá", "Giá trị sử dụng của hàng hoá", "Cả giá trị và giá trị sử dụng", "Giá trị trao đổi của hàng hóa"],
+    c: 0
   },
   {
-    "q": "Kết quả của cạnh tranh trong nội bộ ngành là...",
-    "a": ["Hình thành giá cả của từng loại hàng hóa", "Hình thành giá trị của từng loại hàng hóa", "Hình thành giá trị thị trường của từng loại hàng hóa", "Hình thành giá trị cá biệt của từng loại hàng hóa"],
-    "c": 2
+    q: "Kết quả của cạnh tranh trong nội bộ ngành là...",
+    a: ["Hình thành giá cả của từng loại hàng hóa", "Hình thành giá trị của từng loại hàng hóa", "Hình thành giá trị thị trường của từng loại hàng hóa", "Hình thành giá trị cá biệt của từng loại hàng hóa"],
+    c: 2
   },
   {
-    "q": "Hãy chọn đáp án không phải là tác động tiêu cực của cạnh tranh?",
-    "a": ["Gây tổn hại môi trường kinh doanh", "Gây lãng phí nguồn lực xã hội", "Gây hạn chế năng lực đổi mới khoa học, kỹ thuật", "Gây tổn hại phúc lợi của xã hội"],
-    "c": 2
+    q: "Hãy chọn đáp án không phải là tác động tiêu cực của cạnh tranh?",
+    a: ["Cạnh tranh không lành mạnh gây tổn hại môi trường kinh doanh", "Cạnh tranh không lành mạnh gây lãng phí nguồn lực xã hội", "Cạnh tranh không lành mạnh gây hạn chế năng lực đổi mới khoa học kỹ thuật", "Cạnh tranh không lành mạnh gây tổn hại phúc lợi xã hội"],
+    c: 2
   },
   {
-    "q": "Nhận định nào sau đây là sai về đặc trưng của nền kinh tế thị trường?",
-    "a": ["Có sự đa dạng của các chủ thể kinh tế, nhiều hình thức sở hữu", "Thị trường tự điều tiết nền kinh tế thông qua các quy luật khách quan", "Đóng vai trò quyết định trong việc phân bổ các nguồn lực xã hội", "Giá cả được hình thành theo nguyên tắc thị trường"],
-    "c": 2
+    q: "Nhận định nào sau đây là sai về đặc trưng của nền kinh tế thị trường?",
+    a: ["Có sự đa dạng của các chủ thể kinh tế", "Thị trường tự điều tiết thông qua quy luật kinh tế khách quan", "Đóng vai trò quyết định trong việc phân bổ các nguồn lực xã hội", "Giá cả được hình thành theo mệnh lệnh nhà nước"],
+    c: 3
   },
   {
-    "q": "Quan hệ Cung - Cầu có ảnh hưởng như thế nào đến giá trị và giá cả của hàng hóa?",
-    "a": ["Quyết định giá trị và giá cả của hàng hóa", "Làm cho giá cả luôn cao hơn giá trị", "Làm cho giá trị và giá cả luôn ổn định", "Làm giá cả vận động lên xuống xung quanh giá trị hàng hóa"],
-    "c": 3
+    q: "Quan hệ Cung - Cầu có ảnh hưởng như thế nào đến giá trị và giá cả của hàng hóa?",
+    a: ["Quyết định giá trị và giá cả của hàng hóa", "Làm cho giá cả luôn cao hơn giá trị", "Làm cho giá trị và giá cả luôn ổn định", "Làm giá cả vận động lên xuống xung quanh giá trị hàng hóa"],
+    c: 3
   },
   {
-    "q": "Nếu số lượng tiền cần thiết cho lưu thông không ăn khớp với lượng hàng hóa sẽ dẫn tới tình trạng gì?",
-    "a": ["Trì trệ hoặc lạm phát nền kinh tế", "Trì trệ nền kinh tế", "Lạm phát nền kinh tế", "Mất kiểm soát nền kinh tế"],
-    "c": 0
+    q: "Nếu số lượng tiền cần thiết cho lưu thông không ăn khớp với lượng hàng hóa được lưu thông sẽ dẫn tới tình trạng gì?",
+    a: ["Trì trệ hoặc lạm phát nền kinh tế", "Trì trệ nền kinh tế", "Lạm phát nền kinh tế", "Mất kiểm soát nền kinh tế"],
+    c: 0
   },
   {
-    "q": "Hiện tượng nào sau đây không phải là khuyết tật của nền kinh tế thị trường?",
-    "a": ["Cuộc khủng hoảng tài chính 2008", "Chiến sự tải Dải Gaza năm 2023", "Bất bình đẳng xã hội nặng nề tại Ấn Độ", "Sự cố môi trường Formosa năm 2016"],
-    "c": 1
+    q: "Hiện tượng nào không phải là khuyết tật của nền kinh tế thị trường?",
+    a: ["Cuộc khủng hoảng tài chính 2008", "Chiến sự tại Dải Gaza năm 2023", "Bất bình đẳng xã hội nặng nề tại Ấn Độ", "Sự cố môi trường biển do Formosa gây ra"],
+    c: 1
   },
   {
-    "q": "Đáp án nào không phải là tác động của quy luật cung - cầu?",
-    "a": ["Điều tiết quan hệ giữa sản xuất và lưu thông hàng hóa", "Làm thay đổi cơ cấu và quy mô thị trường", "Nâng cao năng suất lao động, hạ giá thành sản phẩm", "Dự đoán xu thế biến động của giá cả"],
-    "c": 2
+    q: "Đáp án nào không phải là tác động của quy luật cung - cầu?",
+    a: ["Điều tiết quan hệ giữa sản xuất và lưu thông hàng hóa", "Làm thay đổi cơ cấu và quy mô thị trường", "Nâng cao năng suất lao động, hạ giá thành sản phẩm", "Dự đoán xu thế biến động của giá cả"],
+    c: 2
   },
   {
-    "q": "Đâu là những chủ thể chính tham gia thị trường?",
-    "a": ["Người sản xuất và người tiêu dùng", "Người tiêu dùng và chủ thể trung gian", "Người sản xuất, người tiêu dùng, chủ thể trung gian và nhà nước", "Nhà nước và người tiêu dùng"],
-    "c": 2
+    q: "Đâu là những chủ thể chính tham gia thị trường?",
+    a: ["Người sản xuất và người tiêu dùng", "Người tiêu dùng và chủ thể trung gian", "Người sản xuất, người tiêu dùng, chủ thể trung gian và nhà nước", "Nhà nước và người tiêu dùng"],
+    c: 2
   },
   {
-    "q": "Mục tiêu của người sản xuất khi tham gia thị trường?",
-    "a": ["Tạo ra hàng hóa chất lượng", "Thỏa mãn và làm hài lòng nhu cầu người tiêu dùng", "Tìm kiếm lợi nhuận", "Tạo dựng thương hiệu cá nhân"],
-    "c": 2
+    q: "Mục tiêu của người sản xuất khi tham gia thị trường?",
+    a: ["Tạo ra hàng hóa chất lượng", "Thỏa mãn nhu cầu người tiêu dùng", "Tìm kiếm lợi nhuận", "Tạo dựng thương hiệu cá nhân"],
+    c: 2
   },
   {
-    "q": "Nhân tố quyết định đến sự phát triển bền vững của sản xuất là?",
-    "a": ["Sức mua của người tiêu dùng", "Vai trò điều tiết của nhà nước", "Sự phát triển của khoa học công nghệ", "Năng suất lao động cao"],
-    "c": 0
+    q: "Nhân tố quyết định đến sự phát triển bền vững của sản xuất là?",
+    a: ["Sức mua của người tiêu dùng", "Vai trò điều tiết của nhà nước", "Sự phát triển của khoa học công nghệ", "Năng suất lao động cao"],
+    c: 0
   },
   {
-    "q": "Vai trò của nhà nước trong nền kinh tế thị trường?",
-    "a": ["Thực hiện quản lý nhà nước về kinh tế", "Sử dụng các công cụ kinh tế để điều tiết nền kinh tế", "Tất cả các đáp án", "Có các biện pháp để khắc phục khuyết tật của thị trường"],
-    "c": 2
+    q: "Vai trò của nhà nước trong nền kinh tế thị trường?",
+    a: ["Thực hiện quản lý nhà nước về kinh tế", "Sử dụng các công cụ kinh tế để điều tiết", "Khắc phục khuyết tật của nền kinh tế thị trường", "Tất cả các đáp án"],
+    c: 3
   },
   {
-    "q": "Chủ thể nào đóng vai trò quan trọng trong định hướng quá trình sản xuất?",
-    "a": ["Người sản xuất", "Người trung gian", "Người tiêu dùng", "Nhà nước"],
-    "c": 2
+    q: "Trong nền kinh tế, chủ thể nào đóng vai trò quan trọng trong định hướng quá trình sản xuất?",
+    a: ["Người sản xuất", "Người trung gian", "Người tiêu dùng", "Nhà nước"],
+    c: 2
   },
   {
-    "q": "Để thúc đẩy phát triển hiệu quả, ngoài chức năng quản lý, nhà nước cần phải...?",
-    "a": ["Quan tâm đến quyền lợi người sản xuất", "Kiểm soát vai trò của chủ thể trung gian", "Lắng nghe nhu cầu người tiêu dùng", "Tôn trọng các quy luật khách quan của thị trường"],
-    "c": 3
+    q: "Để thúc đẩy phát triển hiệu quả nền kinh tế, nhà nước cần phải...?",
+    a: ["Quan tâm đến quyền lợi người sản xuất", "Kiểm soát vai trò của chủ thể trung gian", "Lắng nghe nhu cầu người tiêu dùng", "Tôn trọng các quy luật khách quan của thị trường"],
+    c: 3
   },
   {
-    "q": "Nhà nước thực hiện chức năng quản lý nền kinh tế nhằm hướng đến?",
-    "a": ["Bảo vệ quyền lợi người sản xuất", "Ngăn chặn tác động tiêu cực của chủ thể trung gian", "Gia tăng sức mua cho người tiêu dùng", "Phát triển kinh tế và đảm bảo hài hòa quan hệ lợi ích giữa các chủ thể"],
-    "c": 3
+    q: "Nhà nước thực hiện chức năng quản lý nền kinh tế nhằm hướng đến?",
+    a: ["Bảo vệ quyền lợi người sản xuất", "Ngăn chặn tác động tiêu cực của trung gian", "Gia tăng sức mua cho người tiêu dùng", "Phát triển kinh tế và đảm bảo hài hòa quan hệ lợi ích"],
+    c: 3
   },
   {
-    "q": "Cung cấp hàng hóa dịch vụ không làm tổn hại sức khỏe và lợi ích con người là trách nhiệm của:",
-    "a": ["Người sản xuất", "Người trung gian", "Người tiêu dùng", "Nhà nước"],
-    "c": 0
+    q: "Việc cung cấp dịch vụ không làm tổn hại đến lợi ích của con người là trách nhiệm của chủ thể nào?",
+    a: ["Người sản xuất", "Người trung gian", "Người tiêu dùng", "Nhà nước"],
+    c: 0
   },
   {
-    "q": "Chủ thể nào sau đây không phải chủ thể trung gian trong thị trường?",
-    "a": ["Nhà phân phối sản phẩm", "Môi giới bất động sản", "Người tiêu dùng", "Môi giới chứng khoán"],
-    "c": 2
+    q: "Chủ thể nào sau đây không phải chủ thể trung gian trong thị trường?",
+    a: ["Nhà phân phối sản phẩm", "Môi giới bất động sản", "Môi giới chứng khoán", "Môi giới khoa học - công nghệ"],
+    c: 3
   },
   {
-    "q": "Cơ sở thực tiễn làm xuất hiện các chủ thể trung gian trong kinh tế thị trường?",
-    "a": ["Sự chỉ đạo của Nhà nước", "Nhu cầu của người tiêu dùng", "Nhu cầu của người sản xuất", "Sự phân công lao động xã hội ngày càng sâu sắc"],
-    "c": 3
+    q: "Cơ sở thực tiễn làm xuất hiện các chủ thể trung gian trong kinh tế thị trường?",
+    a: ["Sự chỉ đạo của Nhà nước", "Nhu cầu của người tiêu dùng", "Nhu cầu của người sản xuất", "Sự phân công lao động xã hội ngày càng sâu sắc"],
+    c: 3
   },
   {
-    "q": "Đâu là nhận định đúng về vai trò của chủ thể trung gian trong thị trường?",
-    "a": ["Chỉ có tác động tích cực đối với thị trường", "Vừa có tác động tích cực, vừa có tác động tiêu cực đối với thị trường", "Đóng vai trò quyết định trong quá trình tiêu thụ hàng hóa", "Được phép quyết định giá cả của hàng hóa"],
-    "c": 1
+    q: "Đâu là nhận định đúng về vai trò của chủ thể trung gian trong thị trường?",
+    a: ["Có tác động tích cực đối với thị trường", "Vừa có tác động tích cực, vừa có tác động tiêu cực", "Đóng vai trò quyết định trong quá trình tiêu thụ", "Được phép quyết định giá cả của hàng hóa"],
+    c: 1
   },
   {
-    "q": "Từ vai trò của một số chủ thể chính tham gia thị trường, nhận định nào sau đây là đúng?",
-    "a": ["Doanh nghiệp đóng vai trò là người tiêu dùng", "Doanh nghiệp đóng vai trò là người sản xuất", "Doanh nghiệp đóng vai trò quyết định trong quá trình tiêu thụ", "Doanh nghiệp vừa đóng vai trò là người mua, vừa đóng vai trò là người bán"],
-    "c": 3
-  },
-];
-
+    q: "Từ vai trò của một số chủ thể chính tham gia thị trường, nhận định nào sau đây là đúng?",
+    a: ["Doanh nghiệp đóng vai trò là người tiêu dùng", "Doanh nghiệp đóng vai trò là người sản xuất", "Doanh nghiệp đóng vai trò quyết định tiêu thụ", "Doanh nghiệp vừa đóng vai trò là người mua, vừa là người bán"],
+    c: 3
+  }
+  ];
+// ================== BIẾN TOÀN CỤC ==================
 let index = 0;
 let answered = false;
+let quizQuestions = [];
 
+// ================== HÀM TRỘN ==================
 function shuffle(array) {
   return array
-    .map(v => ({ v, sort: Math.random() }))
-    .sort((a, b) => a.sort - b.sort)
-    .map(({ v }) => v);
+    .map(v => ({ v, r: Math.random() }))
+    .sort((a, b) => a.r - b.r)
+    .map(x => x.v);
 }
 
+// ================== BẮT ĐẦU / LÀM LẠI ==================
+function startQuiz() {
+  index = 0;
+  answered = false;
+
+  // 🔀 đảo câu hỏi
+  quizQuestions = shuffle([...questions]);
+
+  loadQuestion();
+}
+
+// ================== LOAD CÂU HỎI ==================
 function loadQuestion() {
   answered = false;
-  const q = questions[index];
+  const q = quizQuestions[index];
+
   document.getElementById("question").innerText =
-    `Câu ${index + 1}: ` + q.q;
+    `Câu ${index + 1}: ${q.q}`;
 
   const answersDiv = document.getElementById("answers");
   answersDiv.innerHTML = "";
 
-  const mixed = q.a.map((text, i) => ({ text, i }));
-  shuffle(mixed).forEach(ans => {
+  // 🔀 đảo đáp án nhưng giữ index đúng
+  const mixedAnswers = q.a.map((text, i) => ({
+    text,
+    isCorrect: i === q.c
+  }));
+
+  shuffle(mixedAnswers).forEach(ans => {
     const div = document.createElement("div");
     div.className = "answer";
     div.innerText = ans.text;
-    div.onclick = () => checkAnswer(div, ans.i);
+    div.onclick = () => checkAnswer(div, ans.isCorrect);
     answersDiv.appendChild(div);
   });
 }
 
-function checkAnswer(element, chosenIndex) {
+// ================== KIỂM TRA ĐÁP ÁN ==================
+function checkAnswer(element, isCorrect) {
   if (answered) return;
   answered = true;
 
-  const q = questions[index];
   const all = document.querySelectorAll(".answer");
-
   all.forEach(a => a.onclick = null);
 
-  if (chosenIndex === q.c) {
+  if (isCorrect) {
     element.classList.add("correct");
   } else {
     element.classList.add("wrong");
     all.forEach(a => {
-      if (a.innerText === q.a[q.c]) {
+      if (a.innerText === quizQuestions[index].a[quizQuestions[index].c]) {
         a.classList.add("correct");
       }
     });
   }
 }
 
+// ================== CÂU TIẾP ==================
 function nextQuestion() {
   index++;
-  if (index >= questions.length) {
-    alert("Bạn đã hoàn thành bài thi 🎉");
-    index = 0;
+  if (index >= quizQuestions.length) {
+    alert("🎉 Bạn đã hoàn thành bài thi!\nBắt đầu lại với thứ tự mới.");
+    startQuiz();
+    return;
   }
   loadQuestion();
 }
 
-loadQuestion();
+// ================== CHẠY LẦN ĐẦU ==================
+startQuiz();
 </script>
+
 </body>
 </html>
