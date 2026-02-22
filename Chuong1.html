@@ -176,27 +176,31 @@ const questions = [
 
 let index = 0;
 let answered = false;
+let quizQuestions = [];
 
-// 🔀 Hàm trộn mảng
+// ================== HÀM TRỘN ==================
 function shuffle(array) {
   return array
-    .map(v => ({ v, sort: Math.random() }))
-    .sort((a, b) => a.sort - b.sort)
-    .map(({ v }) => v);
+    .map(v => ({ v, r: Math.random() }))
+    .sort((a, b) => a.r - b.r)
+    .map(x => x.v);
 }
 
-// 🔥 BẮT ĐẦU / LÀM LẠI BÀI THI
+// ================== BẮT ĐẦU / LÀM LẠI ==================
 function startQuiz() {
   index = 0;
   answered = false;
-  shuffle(questions); // đảo câu hỏi
+
+  // 🔀 đảo câu hỏi
+  quizQuestions = shuffle([...questions]);
+
   loadQuestion();
 }
 
-// 🔥 LOAD CÂU HỎI
+// ================== LOAD CÂU HỎI ==================
 function loadQuestion() {
   answered = false;
-  const q = questions[index];
+  const q = quizQuestions[index];
 
   document.getElementById("question").innerText =
     `Câu ${index + 1}: ${q.q}`;
@@ -204,53 +208,53 @@ function loadQuestion() {
   const answersDiv = document.getElementById("answers");
   answersDiv.innerHTML = "";
 
-  // tạo danh sách đáp án + chỉ số gốc
-  const mixedAnswers = q.a.map((text, i) => ({ text, i }));
-  shuffle(mixedAnswers); // đảo đáp án
+  // 🔀 đảo đáp án nhưng giữ index đúng
+  const mixedAnswers = q.a.map((text, i) => ({
+    text,
+    isCorrect: i === q.c
+  }));
 
-  mixedAnswers.forEach(ans => {
+  shuffle(mixedAnswers).forEach(ans => {
     const div = document.createElement("div");
     div.className = "answer";
     div.innerText = ans.text;
-    div.onclick = () => checkAnswer(div, ans.i);
+    div.onclick = () => checkAnswer(div, ans.isCorrect);
     answersDiv.appendChild(div);
   });
 }
 
-// ✅ KIỂM TRA ĐÁP ÁN
-function checkAnswer(element, chosenIndex) {
+// ================== KIỂM TRA ĐÁP ÁN ==================
+function checkAnswer(element, isCorrect) {
   if (answered) return;
   answered = true;
 
-  const q = questions[index];
   const all = document.querySelectorAll(".answer");
-
   all.forEach(a => a.onclick = null);
 
-  if (chosenIndex === q.c) {
+  if (isCorrect) {
     element.classList.add("correct");
   } else {
     element.classList.add("wrong");
     all.forEach(a => {
-      if (a.innerText === q.a[q.c]) {
+      if (a.innerText === quizQuestions[index].a[quizQuestions[index].c]) {
         a.classList.add("correct");
       }
     });
   }
 }
 
-// ▶️ CÂU TIẾP / LÀM LẠI
+// ================== CÂU TIẾP ==================
 function nextQuestion() {
   index++;
-  if (index >= questions.length) {
-    alert("Bạn đã hoàn thành bài thi 🎉\nLàm lại với câu hỏi mới!");
-    startQuiz(); // 🔥 làm lại → đảo lại toàn bộ
+  if (index >= quizQuestions.length) {
+    alert("🎉 Bạn đã hoàn thành bài thi!\nBắt đầu lại với thứ tự mới.");
+    startQuiz();
     return;
   }
   loadQuestion();
 }
 
-// 🚀 CHẠY LẦN ĐẦU
+// ================== CHẠY LẦN ĐẦU ==================
 startQuiz();
 </script>
 
