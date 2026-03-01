@@ -48,9 +48,14 @@ h2 {
   border-color: red;
 }
 
-button {
-  width: 100%;
+.buttons {
+  display: flex;
+  gap: 10px;
   margin-top: 20px;
+}
+
+button {
+  flex: 1;
   padding: 15px;
   font-size: 18px;
   border-radius: 8px;
@@ -62,6 +67,11 @@ button {
 button:active {
   background: #2980b9;
 }
+
+#score {
+  margin-top: 15px;
+  font-weight: bold;
+}
 </style>
 </head>
 
@@ -70,8 +80,15 @@ button:active {
 <div class="container">
   <h2 id="question"></h2>
   <div id="answers"></div>
-  <button onclick="nextQuestion()">Câu tiếp theo</button>
+
+  <div class="buttons">
+    <button onclick="prevQuestion()">⬅ Câu trước</button>
+    <button onclick="nextQuestion()">Câu tiếp ➡</button>
+  </div>
+
+  <div id="score"></div>
 </div>
+
 <script>
 // ================== DỮ LIỆU CÂU HỎI ==================
 const questions = [
@@ -82,7 +99,7 @@ const questions = [
   },
   {
     q: "Nội dung nào sau đây KHÔNG phải là vai trò của cách mạng công nghiệp đối với phát triển?",
-    a: ["Thúc đẩy sự phát triển lực lượng sản xuất", "Thúc đẩy hoàn thiện quan hệ sản xuất", "Thúc đẩy phương thức phân phối công bằng hơn", "Thúc đẩy đôi mới phương thức quản trị phát triển"],
+    a: ["Thúc đẩy sự phát triển lực lượng sản xuất", "Thúc đẩy hoàn thiện quan hệ sản xuất", "Thúc đẩy phương thức phân phối công bằng hơn", "Thúc đẩy đổi mới phương thức quản trị phát triển"],
     c: 2
   },
   {
@@ -177,7 +194,7 @@ const questions = [
   },
   {
     q: "C. Mác đã khái quát tính quy luật của Cách mạng công nghiệp lần thứ nhất qua ba giai đoạn:",
-    a: ["Hiệp tác giản đơn, đại công nghiệp và công trường thủ công", "Công trường thu công, hiệp tác giản đơn và đại công nghiệp", "Hiệp tác giản đơn, công trường thủ công và đại công nghiệp", "Đại công nghiệp, hiệp tác giản đơn và công trường thủ công"],
+    a: ["Hiệp tác giản đơn, đại công nghiệp và công trường thủ công", "Công trường thủ công, hiệp tác giản đơn và đại công nghiệp", "Hiệp tác giản đơn, công trường thủ công và đại công nghiệp", "Đại công nghiệp, hiệp tác giản đơn và công trường thủ công"],
     c: 2
   },
   {
@@ -202,7 +219,7 @@ const questions = [
   },
   {
     q: "Ý nghĩa nghiên cứu CNH, HĐH trong Kinh tế chính trị Mác - Lênin là gì?",
-    a: ["Làm rõ cơ sở khoa học cho hoạch định đường lối phù hợp điều kiện VN", "Hệ thống hóa quan điểm phát triển LLSX", "Góp phần nhận diện mâu thuẫn nảy sinh", "Tất cả các đáp án"],
+    a: ["Làm rõ cơ sở khoa học cho hoạch định đường lối phù hợp điều kiện VN", "Hệ thống hóa quan điểm phát triển LLSX", "Gộp phần nhận diện mâu thuẫn nảy sinh", "Tất cả các đáp án"],
     c: 3
   },
   {
@@ -375,11 +392,13 @@ const questions = [
     a: ["Năng lực cạnh tranh của nền kinh tế", "Nền kinh tế độc lập, tự chủ", "Xuất nhập khẩu", "Gia nhập tổ chức quốc tế"],
     c: 1
   }
-  ];
+];
+
 // ================== BIẾN TOÀN CỤC ==================
 let index = 0;
-let answered = false;
 let quizQuestions = [];
+let userAnswers = []; // lưu đáp án người dùng
+let score = 0;
 
 // ================== HÀM TRỘN ==================
 function shuffle(array) {
@@ -389,75 +408,87 @@ function shuffle(array) {
     .map(x => x.v);
 }
 
-// ================== BẮT ĐẦU / LÀM LẠI ==================
+// ================== BẮT ĐẦU ==================
 function startQuiz() {
   index = 0;
-  answered = false;
-
-  // 🔀 đảo câu hỏi
+  score = 0;
+  userAnswers = [];
   quizQuestions = shuffle([...questions]);
-
   loadQuestion();
 }
 
 // ================== LOAD CÂU HỎI ==================
 function loadQuestion() {
-  answered = false;
   const q = quizQuestions[index];
 
   document.getElementById("question").innerText =
-    `Câu ${index + 1}: ${q.q}`;
+    `Câu ${index + 1}/${quizQuestions.length}: ${q.q}`;
 
   const answersDiv = document.getElementById("answers");
   answersDiv.innerHTML = "";
 
-  // 🔀 đảo đáp án nhưng giữ index đúng
   const mixedAnswers = q.a.map((text, i) => ({
     text,
-    isCorrect: i === q.c
+    isCorrect: i === q.c,
+    index: i
   }));
 
   shuffle(mixedAnswers).forEach(ans => {
     const div = document.createElement("div");
     div.className = "answer";
     div.innerText = ans.text;
-    div.onclick = () => checkAnswer(div, ans.isCorrect);
+
+    // nếu đã trả lời → hiển thị lại trạng thái
+    if (userAnswers[index] !== undefined) {
+      if (ans.index === q.c) div.classList.add("correct");
+      if (ans.index === userAnswers[index] && ans.index !== q.c)
+        div.classList.add("wrong");
+    } else {
+      div.onclick = () => checkAnswer(div, ans);
+    }
+
     answersDiv.appendChild(div);
   });
+
+  updateScore();
 }
 
 // ================== KIỂM TRA ĐÁP ÁN ==================
-function checkAnswer(element, isCorrect) {
-  if (answered) return;
-  answered = true;
+function checkAnswer(element, ans) {
+  if (userAnswers[index] !== undefined) return;
 
-  const all = document.querySelectorAll(".answer");
-  all.forEach(a => a.onclick = null);
+  userAnswers[index] = ans.index;
 
-  if (isCorrect) {
-    element.classList.add("correct");
-  } else {
-    element.classList.add("wrong");
-    all.forEach(a => {
-      if (a.innerText === quizQuestions[index].a[quizQuestions[index].c]) {
-        a.classList.add("correct");
-      }
-    });
-  }
+  if (ans.isCorrect) score++;
+
+  loadQuestion();
 }
 
 // ================== CÂU TIẾP ==================
 function nextQuestion() {
-  index++;
-  if (index >= quizQuestions.length) {
-    alert("🎉 Bạn đã hoàn thành bài thi!\nBắt đầu lại với thứ tự mới.");
-    startQuiz();
-    return;
+  if (index < quizQuestions.length - 1) {
+    index++;
+    loadQuestion();
+  } else {
+    alert(`🎉 Hoàn thành!\nSố câu đúng: ${score}/${quizQuestions.length}`);
   }
-  loadQuestion();
 }
 
-// ================== CHẠY LẦN ĐẦU ==================
+// ================== CÂU TRƯỚC ==================
+function prevQuestion() {
+  if (index > 0) {
+    index--;
+    loadQuestion();
+  }
+}
+
+// ================== HIỂN THỊ ĐIỂM ==================
+function updateScore() {
+  document.getElementById("score").innerText =
+    `✅ Đúng: ${score} / ${quizQuestions.length}`;
+}
+
+// ================== CHẠY ==================
 startQuiz();
 </script>
 
