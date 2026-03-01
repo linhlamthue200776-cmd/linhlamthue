@@ -394,11 +394,11 @@ const questions = [
   }
 ];
 
-// ================== BIẾN TOÀN CỤC ==================
+// ================== BIẾN ==================
 let index = 0;
-let quizQuestions = [];
-let userAnswers = []; // lưu đáp án người dùng
 let score = 0;
+let quizQuestions = [];
+let userAnswers = [];
 
 // ================== HÀM TRỘN ==================
 function shuffle(array) {
@@ -408,16 +408,30 @@ function shuffle(array) {
     .map(x => x.v);
 }
 
-// ================== BẮT ĐẦU ==================
+// ================== KHỞI TẠO ==================
 function startQuiz() {
   index = 0;
   score = 0;
   userAnswers = [];
-  quizQuestions = shuffle([...questions]);
+
+  // 🔒 trộn câu hỏi + trộn đáp án MỘT LẦN DUY NHẤT
+  quizQuestions = shuffle([...questions]).map(q => {
+    const answers = q.a.map((text, i) => ({
+      text,
+      index: i,
+      isCorrect: i === q.c
+    }));
+
+    return {
+      ...q,
+      mixedAnswers: shuffle(answers)
+    };
+  });
+
   loadQuestion();
 }
 
-// ================== LOAD CÂU HỎI ==================
+// ================== LOAD CÂU ==================
 function loadQuestion() {
   const q = quizQuestions[index];
 
@@ -427,21 +441,15 @@ function loadQuestion() {
   const answersDiv = document.getElementById("answers");
   answersDiv.innerHTML = "";
 
-  const mixedAnswers = q.a.map((text, i) => ({
-    text,
-    isCorrect: i === q.c,
-    index: i
-  }));
-
-  shuffle(mixedAnswers).forEach(ans => {
+  q.mixedAnswers.forEach(ans => {
     const div = document.createElement("div");
     div.className = "answer";
     div.innerText = ans.text;
 
-    // nếu đã trả lời → hiển thị lại trạng thái
+    // nếu đã trả lời → hiển thị lại
     if (userAnswers[index] !== undefined) {
-      if (ans.index === q.c) div.classList.add("correct");
-      if (ans.index === userAnswers[index] && ans.index !== q.c)
+      if (ans.isCorrect) div.classList.add("correct");
+      if (ans.index === userAnswers[index] && !ans.isCorrect)
         div.classList.add("wrong");
     } else {
       div.onclick = () => checkAnswer(div, ans);
@@ -453,15 +461,28 @@ function loadQuestion() {
   updateScore();
 }
 
-// ================== KIỂM TRA ĐÁP ÁN ==================
+// ================== CHỌN ĐÁP ÁN ==================
 function checkAnswer(element, ans) {
   if (userAnswers[index] !== undefined) return;
 
   userAnswers[index] = ans.index;
 
-  if (ans.isCorrect) score++;
+  const all = document.querySelectorAll(".answer");
+  all.forEach(a => a.onclick = null);
 
-  loadQuestion();
+  if (ans.isCorrect) {
+    element.classList.add("correct");
+    score++;
+  } else {
+    element.classList.add("wrong");
+    all.forEach(a => {
+      if (a.innerText === quizQuestions[index].a[quizQuestions[index].c]) {
+        a.classList.add("correct");
+      }
+    });
+  }
+
+  updateScore();
 }
 
 // ================== CÂU TIẾP ==================
@@ -494,3 +515,4 @@ startQuiz();
 
 </body>
 </html>
+
