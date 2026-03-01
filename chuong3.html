@@ -48,9 +48,14 @@ h2 {
   border-color: red;
 }
 
-button {
-  width: 100%;
+.buttons {
+  display: flex;
+  gap: 10px;
   margin-top: 20px;
+}
+
+button {
+  flex: 1;
   padding: 15px;
   font-size: 18px;
   border-radius: 8px;
@@ -62,6 +67,19 @@ button {
 button:active {
   background: #2980b9;
 }
+
+.reset {
+  background: #e67e22;
+}
+
+.reset:active {
+  background: #d35400;
+}
+
+#score {
+  margin-top: 15px;
+  font-weight: bold;
+}
 </style>
 </head>
 
@@ -70,483 +88,38 @@ button:active {
 <div class="container">
   <h2 id="question"></h2>
   <div id="answers"></div>
-  <button onclick="nextQuestion()">Câu tiếp theo</button>
+
+  <div class="buttons">
+    <button onclick="prevQuestion()">⬅ Câu trước</button>
+    <button onclick="nextQuestion()">Câu tiếp ➡</button>
+    <button class="reset" onclick="resetQuiz()">🔄 Làm lại</button>
+  </div>
+
+  <div id="score"></div>
 </div>
+
 <script>
-// ================== DỮ LIỆU CÂU HỎI ==================
+// ================== DỮ LIỆU ==================
 const questions = [
   {
-    q: "Chọn đáp án đúng về công thức chung của tư bản?",
-    a: ["T-H-T", "T-H-T'", "H-T-H", "H-T-'"],
+    q: "2 + 2 = ?",
+    a: ["3", "4", "5", "6"],
     c: 1
   },
   {
-    q: "Vai trò của tiền trong công thức chung của tư bản là gì?",
-    a: ["Tiền đóng vai trò là tư bản", "Tiền đóng vai trò là trung gian trong trao đổi", "Tiền đóng vai trò là thước đo giá trị", "Tiền đóng vai trò là phương tiện thanh toán"],
+    q: "Thủ đô của Việt Nam là?",
+    a: ["Hà Nội", "Huế", "Đà Nẵng", "TP.HCM"],
     c: 0
-  },
-  {
-    q: "Chọn đáp án đúng về công thức lưu thông hàng hóa giản đơn?",
-    a: ["T-H-T", "T-H-T'", "H-T-H", "T-H-H"],
-    c: 2
-  },
-  {
-    q: "Vai trò của tiền trong công thức lưu thông hàng hóa giản đơn là gì?",
-    a: ["Tiền đóng vai trò là tư bản", "Tiền đóng vai trò làm tăng giá trị", "Tiền làm môi giới, trung gian trong trao đổi hàng hóa", "Thực hiện giá trị sử dụng của hàng hóa"],
-    c: 2
-  },
-  {
-    q: "C. Mác đã chỉ ra mâu thuẫn của công thức chung của tư bản xuất phát từ...",
-    a: ["Mâu thuẫn về vai trò của sản xuất và lưu thông trong quá trình tạo ra và thu về giá trị hàng hóa", "Sự khác biệt giữa công thức chung và công thức giản đơn", "Mâu thuẫn về vai trò của tiền", "Mâu thuẫn về vai trò của sản xuất và lưu thông trong quá trình tạo ra giá trị thặng dư"],
-    c: 3
-  },
-  {
-    q: "Sau khi nghiên cứu công thức chung của tư bản, C. Mác đã rút ra điều gì về nguồn gốc của giá trị thặng dư?",
-    a: ["Giá trị thặng dư có được nhờ đưa tiền vào lưu thông", "Giá trị thặng dư do mua rẻ bán đắt", "Giá trị thặng dư được tạo ra trong lĩnh vực sản xuất nhưng cần có lưu thông để thực hiện nó", "Giá trị thặng dư chính là tiền lãi"],
-    c: 2
-  },
-  {
-    q: "Tư bản là gì?",
-    a: ["Là tiền và máy móc thiết bị", "Là tiền có khả năng đẻ ra tiền", "Là giá trị mang lại giá trị thặng dư bằng cách bóc lột sức lao động của công nhân làm thuê", "Là công cụ sản xuất và nguyên liệu"],
-    c: 2
-  },
-  {
-    q: "Sức lao động hay năng lực lao động là toàn bộ (...) tồn tại trong cơ thể, trong một người đang sống, và được người đó đem ra vận dụng mỗi khi sản xuất ra một giá trị sử dụng nào đó.",
-    a: ["Năng lực thể chất", "Năng lực tinh thần", "Năng lực sản xuất", "Năng lực thể chất và tinh thần"],
-    c: 3
-  },
-  {
-    q: "Giá trị hàng hóa sức lao động gồm...",
-    a: ["Giá trị tư liệu sinh hoạt để tái sản xuất sức lao động", "Giá trị tư liệu sinh hoạt nuôi gia đình người công nhân", "Phí tổn đào tạo", "Tất cả các đáp án"],
-    c: 3
-  },
-  {
-    q: "Điều kiện để sức lao động trở thành hàng hoá là...",
-    a: ["Người lao động được tự do về thân thể và không có tư liệu sản xuất", "Có quyền sở hữu năng lực lao động của mình", "Có quyền bán sức lao động của mình cho người khác", "Muốn lao động để có thu nhập"],
-    c: 0
-  },
-  {
-    q: "Giá trị sử dụng hàng hoá sức lao động là...",
-    a: ["Thoả mãn nhu cầu của người mua nó", "Công dụng của hàng hoá sức lao động", "Tính có ích của hàng hoá sức lao động", "Tất cả các đáp án"],
-    c: 3
-  },
-  {
-    q: "Sự xuất hiện của sức lao động với tư cách là một hàng hóa có ý nghĩa như thế nào?",
-    a: ["Làm tăng thêm mâu thuẫn trong công thức chung", "Làm phong phú thêm thế giới hàng hóa", "Người lao động được giải phóng khỏi áp bức", "Giải quyết được mâu thuẫn trong công thức chung, là điều kiện để tiền trở thành tư bản"],
-    c: 3
-  },
-  {
-    q: "Giá trị hàng hoá sức lao động khác với giá trị hàng hoá thông thường ở điểm nào?",
-    a: ["Tạo ra giá trị nhiều hơn", "Mang yếu tố tinh thần", "Mang yếu tố lịch sử", "Mang yếu tố tinh thần và lịch sử"],
-    c: 3
-  },
-  {
-    q: "Giá trị của hàng hoá sức lao động phụ thuộc vào yếu tố nào?",
-    a: ["Năng suất lao động xã hội, nhất là trong ngành sản xuất tư liệu sinh hoạt", "Năng suất lao động ngành sản xuất tư liệu sản xuất", "Năng suất lao động của xí nghiệp cụ thể", "Phong tục, tập quán và mức sống của vùng hay nước sử dụng"],
-    c: 0
-  },
-  {
-    q: "Bản chất của tư bản là gì?",
-    a: ["Tiền đẻ ra tiền", "Tư liệu sản xuất", "Quan hệ sản xuất xã hội", "Tư liệu lao động"],
-    c: 2
-  },
-  {
-    q: "Trong xí nghiệp tư bản người công nhân cần làm việc theo nguyên tắc gì?",
-    a: ["Không làm vượt quá giá trị sức lao động", "Làm việc theo năng lực cá nhân", "Làm việc dưới sự kiểm soát của nhà tư bản", "Tất cả các đáp án"],
-    c: 2
-  },
-  {
-    q: "Giá trị thặng dư là (...) do công nhân tạo ra, là kết quả của lao động không công của công nhân cho nhà tư bản.",
-    a: ["Số hàng hóa dư ra", "Lượng chi phí sản xuất tiết kiệm được", "Bộ phận giá trị sử dụng mới", "Bộ phận giá trị mới dôi ra ngoài giá trị sức lao động"],
-    c: 3
-  },
-  {
-    q: "Hình thái tồn tại của tư bản bất biến là gì?",
-    a: ["Sức lao động", "Máy móc, thiết bị, nhà xưởng", "Nguyên nhiên vật liệu", "Tư liệu sản xuất"],
-    c: 3
-  },
-  {
-    q: "Hình thái tồn tại của tư bản khả biến là gì?",
-    a: ["Hàng hóa sức lao động", "Máy móc", "Nhà xưởng", "Nguyên nhiên vật liệu"],
-    c: 0
-  },
-  {
-    q: "Về mặt lượng, tư bản bất biến trong quá trình sản xuất sẽ thay đổi như thế nào?",
-    a: ["Được bảo toàn và chuyển toàn bộ giá trị vào sản phẩm", "Chuyển dần từng phần giá trị", "Giảm đi", "Tăng lên"],
-    c: 0
-  },
-  {
-    q: "Tư bản khả biến trong quá trình sản xuất sẽ thay đổi như thế nào về mặt lượng?",
-    a: ["Không tăng lên", "Chuyển dần giá trị vào sản phẩm", "Chuyển nguyên giá trị vào sản phẩm", "Tăng lên"],
-    c: 3
-  },
-  {
-    q: "Tiền công dưới chủ nghĩa tư bản là...",
-    a: ["Giá trị lao động", "Giá cả hàng hóa sức lao động", "Sự trả công lao động", "Giá trị hàng hóa sức lao động"],
-    c: 1
-  },
-  {
-    q: "Nguyên, nhiên, vật liệu chính là...",
-    a: ["Tư bản bất biến", "Tư bản khả biến", "Tư bản tuần hoàn", "Tư bản cố định"],
-    c: 0
-  },
-  {
-    q: "Tiền công được biểu hiện bằng số lượng hàng hoá tiêu dùng và dịch vụ mà công nhân mua được là...",
-    a: ["Tiền công thực tế", "Tiền công danh nghĩa", "Tiền công sản phẩm", "Tiền công thời gian"],
-    c: 0
-  },
-  {
-    q: "Trong công thức giá trị của hàng hóa, đâu là bộ phận giá trị mới được tạo ra trong quá trình sản xuất?",
-    a: ["(c+v)", "G", "m", "(v+m)"],
-    c: 3
-  },
-  {
-    q: "Dựa vào căn cứ nào để phân chia tư bản thành tư bản cố định và tư bản lưu động?",
-    a: ["Nguồn gốc giá trị thặng dư", "Phương thức chu chuyển giá trị vào sản phẩm", "Phương thức khấu hao", "Vai trò tạo ra giá trị thặng dư"],
-    c: 1
-  },
-  {
-    q: "Nguyên nhân cơ bản làm cho tư bản cố định hao mòn hữu hình là...",
-    a: ["Tiến bộ khoa học kỹ thuật", "Cung lớn hơn cầu", "Tăng năng suất lao động chế tạo máy", "Do quá trình sử dụng và tác động của tự nhiên"],
-    c: 3
-  },
-  {
-    q: "Nguyên nhân cơ bản làm cho tư bản cố định hao mòn vô hình là...",
-    a: ["Ứng dụng tiến bộ khoa học - kĩ thuật - công nghệ mới", "Cung lớn hơn cầu", "Tăng năng suất lao động chế tạo máy", "Tác động tự nhiên"],
-    c: 0
-  },
-  {
-    q: "Ý nghĩa của sự phân chia tư bản thành tư bản bất biến và tư bản khả biến?",
-    a: ["Đặc điểm chuyển giá trị vào sản phẩm", "Vai trò của lao động quá khứ và sống", "Chỉ ra nguồn gốc của giá trị thặng dư và bản chất bóc lột", "Tính chất hai mặt của lao động"],
-    c: 2
-  },
-  {
-    q: "Khẳng định nào dưới đây KHÔNG đúng về tư bản cố định?",
-    a: ["Tư bản cố định là nguồn gốc của giá trị thặng dư", "Tư bản cố định là điều kiện tăng năng suất", "Tư bản cố định là điều kiện giảm giá trị hàng hoá", "Tư bản cố định là bộ phận chủ yếu của tư bản bất biến"],
-    c: 0
-  },
-  {
-    q: "Vai trò của máy móc trong quá trình tạo ra giá trị thặng dư là gì?",
-    a: ["Máy móc là nguồn gốc", "Máy móc là tiền đề vật chất cho việc tạo ra giá trị thặng dư", "Máy móc và sức lao động đều tạo ra m", "Máy móc là yếu tố quyết định tạo ra m"],
-    c: 1
-  },
-  {
-    q: "Khi trả tiền công bằng giá trị sức lao động cho công nhân làm thuê, nhà tư bản thu được gì?",
-    a: ["Giá trị thặng dư", "Giá trị sử dụng", "Không thu được gì", "Tất cả sai"],
-    c: 0
-  },
-  {
-    q: "Tuần hoàn của tư bản là sự vận động trải qua mấy giai đoạn?",
-    a: ["Sự vận động của tiền tệ", "Vận động từ tiền sang sản xuất và hàng hóa", "Vận động qua 3 giai đoạn dưới 3 hình thái gắn với chức năng tương ứng và quay về hình thái ban đầu kèm theo m", "Vận động liên tục của tư bản cố định"],
-    c: 2
-  },
-  {
-    q: "Trong tuần hoàn, hình thái nào chuẩn bị điều kiện sản xuất ra giá trị thặng dư?",
-    a: ["Tư bản sản xuất", "Tư bản thương nghiệp", "Tư bản hàng hóa", "Tư bản tiền tệ"],
-    c: 3
-  },
-  {
-    q: "Trong tuần hoàn, hình thái nào trực tiếp tạo ra giá trị thặng dư?",
-    a: ["Tư bản sản xuất", "Tư bản hàng hóa", "Tư bản tiền tệ", "Tư bản ngân hàng"],
-    c: 0
-  },
-  {
-    q: "Trong tuần hoàn, hình thái nào đóng vai trò thực hiện giá trị thặng dư?",
-    a: ["Tư bản sản xuất", "Tư bản hàng hóa", "Tư bản tiền tệ", "Tư bản ngân hàng"],
-    c: 1
-  },
-  {
-    q: "Thời gian chu chuyển của tư bản bao gồm những giai đoạn nào?",
-    a: ["Mua yếu tố đầu vào và bán hàng đầu ra", "Hoàn thiện sản phẩm", "Vận chuyển hàng hóa", "Thời gian sản xuất và thời gian lưu thông"],
-    c: 3
-  },
-  {
-    q: "Tốc độ chu chuyển của tư bản tăng lên thì khối lượng giá trị thặng dư sẽ...",
-    a: ["Tăng lên", "Giảm xuống", "Không đổi", "Tuỳ điều kiện"],
-    c: 0
-  },
-  {
-    q: "Tỉ suất giá trị thặng dư là tỉ lệ phần trăm giữa giá trị thặng dư và (...) để sản xuất ra giá trị thặng dư đó.",
-    a: ["Tư bản bất biến", "Tư bản khả biến", "Tư bản cố định", "Tư bản lưu động"],
-    c: 1
-  },
-  {
-    q: "Khối lượng giá trị thặng dư là lượng giá trị thặng dư bằng (...) mà nhà tư bản thu được.",
-    a: ["Hiện vật", "Hàng hóa", "Tiền", "Tất cả sai"],
-    c: 2
-  },
-  {
-    q: "M = m' . v là công thức tính...",
-    a: ["Giá trị thặng dư", "Khối lượng giá trị thặng dư", "Tỉ suất giá trị thặng dư", "Lượng giá trị hàng hóa"],
-    c: 1
-  },
-  {
-    q: "m' = (m/v) x 100% là công thức tính...",
-    a: ["Giá trị thặng dư", "Khối lượng giá trị thặng dư", "Tỉ suất giá trị thặng dư", "Lượng giá trị hàng hóa"],
-    c: 2
-  },
-  {
-    q: "Tỉ suất giá trị thặng dư biểu hiện...",
-    a: ["Trình độ bóc lột của tư bản đối với lao động làm thuê", "Quy mô bóc lột", "Tính chất bóc lột", "Phạm vi bóc lột"],
-    c: 0
-  },
-  {
-    q: "Khối lượng giá trị thặng dư phản ánh điều gì?",
-    a: ["Trình độ bóc lột", "Quy mô bóc lột của tư bản đối với lao động làm thuê", "Tính chất bóc lột", "Phạm vi bóc lột"],
-    c: 1
-  },
-  {
-    q: "Phương pháp thu được m bằng cách kéo dài ngày lao động vượt quá thời gian lao động tất yếu khi các yếu tố khác không đổi là gì?",
-    a: ["Sản xuất giá trị thặng dư siêu ngạch", "Sản xuất giá trị thặng dư tương đối", "Sản xuất giá trị thặng dư độc quyền", "Sản xuất giá trị thặng dư tuyệt đối"],
-    c: 3
-  },
-  {
-    q: "Phương pháp thu được m bằng cách rút ngắn thời gian lao động tất yếu khi độ dài ngày lao động không đổi là gì?",
-    a: ["Sản xuất giá trị thặng dư siêu ngạch", "Sản xuất giá trị thặng dư tương đối", "Sản xuất giá trị thặng dư độc quyền", "Sản xuất giá trị thặng dư tuyệt đối"],
-    c: 1
-  },
-  {
-    q: "Phương pháp sản xuất giá trị thặng dư tuyệt đối được áp dụng phổ biến trong giai đoạn...",
-    a: ["Trước khi CNTB ra đời", "Trong giai đoạn đầu của CNTB", "Giai đoạn đại công nghiệp cơ khí", "Giai đoạn kinh tế thị trường"],
-    c: 1
-  },
-  {
-    q: "Để tăng cường bóc lột giá trị thặng dư tương đối cần phải...",
-    a: ["Tăng cường độ lao động xã hội", "Tăng cường độ lao động ngành tư liệu sinh hoạt", "Tăng năng suất lao động trong các ngành sản xuất ra tư liệu sinh hoạt", "Kéo dài thời gian lao động"],
-    c: 2
-  },
-  {
-    q: "Cơ sở chung của giá trị thặng dư tương đối và giá trị thặng dư siêu ngạch là...",
-    a: ["Tăng năng suất lao động xã hội", "Tăng năng suất lao động", "Tăng năng suất lao động cá biệt", "Giảm giá trị sức lao động"],
-    c: 1
-  },
-  {
-    q: "Điểm giống nhau giữa phương pháp sản xuất m tuyệt đối và m tương đối là gì?",
-    a: ["Đều tốn sức lao động nhiều hơn", "Đều làm tăng tỉ suất giá trị thặng dư", "Đều giảm giá trị sức lao động", "Đều áp dụng không giới hạn"],
-    c: 1
-  },
-  {
-    q: "Thời gian lao động tất yếu được hiểu là gì?",
-    a: ["Thời gian làm việc như nhu cầu", "Thời gian theo yêu cầu tư bản", "Thời gian người công nhân làm việc để bù đắp lại giá trị sức lao động của chính mình", "Thời gian tạo ra m"],
-    c: 2
-  },
-  {
-    q: "Thời gian lao động thặng dư là thời gian mà người công nhân tạo ra...",
-    a: ["Giá trị thặng dư", "Toàn bộ giá trị sử dụng", "Toàn bộ giá trị mới", "Giá trị trao đổi"],
-    c: 0
-  },
-  {
-    q: "Tư bản đầu tư 900.000$, c=780.000$. Số công nhân 400 người. Khối lượng giá trị mới 1 công nhân tạo ra khi m'=200% là?",
-    a: ["600$", "2.800$", "900$", "300$"],
-    c: 2
-  },
-  {
-    q: "Hao mòn thiết bị 100k, nguyên liệu 300k. Tổng giá trị tạo ra 1 triệu, m'=200%. Chi phí tư bản khả biến v là?",
-    a: ["250.000$", "200.000$", "300.000$", "400.000$"],
-    c: 1
-  },
-  {
-    q: "Ngày làm 8h, m'=100%. Nhà tư bản tăng m' lên 150% khi các yếu tố khác không đổi. Đó là phương pháp gì?",
-    a: ["Siêu ngạch", "Tương đối", "Bình quân", "Tuyệt đối"],
-    c: 3
-  },
-  {
-    q: "Xí nghiệp A thay dây chuyền mới, năng suất tăng 50%, cắt giảm nửa công nhân. Tỉ suất m thay đổi thế nào?",
-    a: ["Tỉ suất m tăng do áp dụng phương pháp sản xuất giá trị thặng dư tương đối", "Tỉ suất m không đổi", "Tỉ suất m tăng do phương pháp tuyệt đối", "Tăng do giảm quỹ lương"],
-    c: 0
-  },
-  {
-    q: "Ngày làm 8h, m'=100%, tăng ngày thêm 1h và giá trị sức lao động giảm 25%. m' mới là?",
-    a: ["150%", "200%", "250%", "300%"],
-    c: 1
-  },
-  {
-    q: "Giới hạn của phương pháp sản xuất giá trị thặng dư tuyệt đối là...",
-    a: ["Độ dài ngày không quá 24h", "Sự đấu tranh đòi giảm giờ làm", "Giới hạn về thể chất và tinh thần của công nhân", "Không có giới hạn"],
-    c: 2
-  },
-  {
-    q: "Giới hạn của phương pháp sản xuất giá trị thặng dư tương đối là...",
-    a: ["Độ dài ngày không quá 24h", "Sự đấu tranh đòi giảm giờ làm", "Giới hạn thể chất và tinh thần", "Không có giới hạn"],
-    c: 3
-  },
-  {
-    q: "Tái sản xuất là gì?",
-    a: ["Tái tạo yếu tố sản xuất", "Quá trình sản xuất liên tục được lặp đi lặp lại không ngừng", "Duy trì điều kiện vật chất", "Tái chế sản phẩm"],
-    c: 1
-  },
-  {
-    q: "Tái sản xuất mở rộng là gì?",
-    a: ["Quá trình sản xuất liên tục, lặp lại với quy mô ngày càng lớn", "Quá trình sản xuất lặp lại không ngừng", "Mở rộng phạm vi trao đổi", "Sản xuất lặp lại nhiều lần"],
-    c: 0
-  },
-  {
-    q: "Tích lũy tư bản là gì?",
-    a: ["Tiết kiệm qua nhiều vòng", "Tích lũy hàng hóa", "Tiết kiệm chi phí máy móc", "Quá trình chuyển hóa một phần giá trị thặng dư thành tư bản"],
-    c: 3
-  },
-  {
-    q: "Thực chất của cấu tạo hữu cơ tư bản là gì?",
-    a: ["Tỷ lệ máy móc và công nhân", "Tỷ lệ cố định và lưu động", "Tỷ lệ giữa tư bản bất biến và tư bản khả biến", "Tỷ lệ tiền tệ và sản xuất"],
-    c: 2
-  },
-  {
-    q: "Động cơ trực tiếp thúc đẩy tích lũy tư bản là...",
-    a: ["Quy luật giá trị", "Quy luật giá trị thặng dư", "Quy luật cạnh tranh", "Quy luật cung - cầu"],
-    c: 1
-  },
-  {
-    q: "Nếu khối lượng m không đổi, quy mô tích lũy phụ thuộc vào...",
-    a: ["Tỉ suất m", "Tư bản bất biến", "Tư bản khả biến", "Tỷ lệ phân chia m cho tích lũy và tiêu dùng"],
-    c: 3
-  },
-  {
-    q: "Ý nào dưới đây KHÔNG đúng về tích luỹ tư bản?",
-    a: ["Biến một phần m thành tư bản", "Nguồn gốc là m", "Động cơ là m", "Tích luỹ tư bản là sự tiết kiệm tư bản"],
-    c: 3
-  },
-  {
-    q: "Yếu tố làm tăng nhanh quy mô của tư bản xã hội là...",
-    a: ["Tập trung tư bản", "Tích tụ tư bản", "Giá trị thặng dư", "Tỉ suất giá trị thặng dư"],
-    c: 1
-  },
-  {
-    q: "Tập trung tư bản không tạo ra điều gì?",
-    a: ["Tăng quy mô tư bản cá biệt", "Sáp nhập tư bản sẵn có", "Thúc đẩy tích tụ", "Tăng quy mô của tổng tư bản xã hội"],
-    c: 3
-  },
-  {
-    q: "Điểm giống nhau giữa tích tụ và tập trung tư bản là...",
-    a: ["Cùng nguồn gốc trực tiếp", "Đều làm tăng quy mô tư bản xã hội", "Đều làm tăng quy mô của tư bản cá biệt", "Tất cả các đáp án"],
-    c: 2
-  },
-  {
-    q: "Điểm khác nhau giữa tích tụ và tập trung tư bản là...",
-    a: ["Biện pháp làm tăng quy mô tư bản cá biệt", "Biện pháp bóc lột", "Biện pháp phân chia", "Biện pháp sản xuất m"],
-    c: 0
-  },
-  {
-    q: "Tập trung tư bản làm tăng quy mô của...",
-    a: ["Tư bản xã hội", "Tư bản cá biệt", "Vừa cá biệt vừa xã hội", "Không tăng loại nào"],
-    c: 1
-  },
-  {
-    q: "Lợi tức tư bản cho vay biến động theo quan hệ cung - cầu về tư bản cho vay:...",
-    a: ["Cung = cầu, lợi tức tăng", "Cung > cầu, lợi tức giảm", "Cung < cầu, lợi tức giảm", "Cung = cầu, lợi tức giảm"],
-    c: 1
-  },
-  {
-    q: "Tích tụ tư bản phản ánh mối quan hệ trực tiếp giữa...",
-    a: ["Tư sản và nông dân", "Giai cấp tư sản và giai cấp công nhân", "Các nhà tư bản với nhau", "Công nhân và nông dân"],
-    c: 1
-  },
-  {
-    q: "Tư bản 10tr, c=8tr, v=2tr, m'=200%. Tiêu dùng 2tr còn lại tích lũy vào v. Sau 3 năm quy mô tích lũy là bao nhiêu?",
-    a: ["18 triệu", "20 triệu", "14 triệu", "16 triệu"],
-    c: 3
-  },
-  {
-    q: "Cấu tạo hữu cơ (c/v) phản ánh...",
-    a: ["Trình độ ứng dụng khoa học - kĩ thuật vào sản xuất", "Trình độ phát triển quy mô", "Mức độ bóc lột", "Phát triển theo chiều sâu"],
-    c: 0
-  },
-  {
-    q: "Chi phí sản xuất tư bản chủ nghĩa là...",
-    a: ["Chi phí mà nhà tư bản bỏ ra để sản xuất ra hàng hóa", "Chi phí tư liệu sản xuất", "Chi phí sức lao động", "Chi phí thực tế xã hội"],
-    c: 0
-  },
-  {
-    q: "Bộ phận chi phí sản xuất tư bản chủ nghĩa được cấu thành bởi:...",
-    a: ["c+v", "c+m", "v+m", "c+v+m"],
-    c: 0
-  },
-  {
-    q: "Khoản chênh lệch giữa giá cả hàng hóa và chi phí sản xuất được gọi là?",
-    a: ["Lợi nhuận", "Giá trị thặng dư", "Lợi tức", "Thu nhập"],
-    c: 0
-  },
-  {
-    q: "Nhà tư bản công nghiệp bán hàng cho nhà tư bản thương nghiệp với giá cả...",
-    a: ["Thấp hơn giá trị", "Cao hơn giá trị", "Bằng giá trị", "Tất cả sai"],
-    c: 0
-  },
-  {
-    q: "Nguồn gốc của lợi nhuận thương nghiệp là gì?",
-    a: ["Một phần m mà nhà tư bản sản xuất nhường lại", "Toàn bộ m", "Một phần m từ tư bản cho vay", "Lợi nhuận từ mua bán trên thị trường"],
-    c: 0
-  },
-  {
-    q: "Lợi tức được phát sinh khi thực hiện quan hệ kinh tế nào?",
-    a: ["Mua bán", "Cho vay tiền", "Thuê lao động", "Hợp tác"],
-    c: 1
-  },
-  {
-    q: "Lợi ích kinh tế của tư bản ngân hàng có được từ đâu?",
-    a: ["Từ nhận gửi tiền", "Từ cho vay", "Từ phân chia m cùng tập đoàn", "Từ chênh lệch lãi suất nhận gửi và lãi suất cho vay sau khi trừ chi phí nghiệp vụ"],
-    c: 3
-  },
-  {
-    q: "Bản chất của địa tô tư bản chủ nghĩa là (...) mà nhà tư bản kinh doanh nông nghiệp phải nộp cho địa chủ.",
-    a: ["Bộ phận lợi nhuận siêu nghạch", "Toàn bộ lợi nhuận siêu nghạch", "Lợi nhuận bình quân", "Lợi nhuận"],
-    c: 1
-  },
-  {
-    q: "Lợi nhuận có quan hệ thế nào với giá trị thặng dư?",
-    a: ["Không quan hệ", "Dôi ra ngoài m", "Là nguồn gốc của m", "Lợi nhuận chính là một hình thức biểu hiện của giá trị thặng dư"],
-    c: 3
-  },
-  {
-    q: "Tỷ suất lợi nhuận là tỷ lệ phần trăm giữa lợi nhuận và...",
-    a: ["Toàn bộ c", "Toàn bộ v", "Toàn bộ giá trị của tư bản ứng trước", "Toàn bộ giá trị lợi nhuận bình quân"],
-    c: 2
-  },
-  {
-    q: "Nhân tố nào ảnh hưởng tới tỷ suất lợi nhuận?",
-    a: ["Tỷ suất giá trị thặng dư", "Cấu tạo hữu cơ", "Tốc độ chu chuyển và tiết kiệm tư bản bất biến", "Tất cả các đáp án"],
-    c: 3
-  },
-  {
-    q: "Lợi nhuận bình quân là...",
-    a: ["Số lợi nhuận bằng nhau của tư bản khác nhau ngành khác nhau", "Lợi nhuận bằng nhau cùng ngành", "Số lợi nhuận bằng nhau của những tư bản như nhau đầu tư vào các ngành khác nhau", "Lợi nhuận khác nhau cùng ngành"],
-    c: 2
-  },
-  {
-    q: "Nguyên nhân hình thành tỉ suất lợi nhuận bình quân là?",
-    a: ["Cạnh tranh", "Chạy theo m", "Cạnh tranh giữa các ngành", "Cạnh tranh trong nội bộ ngành"],
-    c: 2
-  },
-  {
-    q: "Nhận định nào SAI về lợi nhuận thương nghiệp?",
-    a: ["Có được nhờ bán cao hơn giá trị", "Thể hiện quan hệ công nghiệp và thương nghiệp", "Là phần m nhường lại", "Nguồn gốc là m"],
-    c: 0
-  },
-  {
-    q: "Mối quan hệ giữa tư bản thương nghiệp và tư bản sản xuất là?",
-    a: ["Sản xuất phụ thuộc thương nghiệp", "Tư bản thương nghiệp phụ thuộc vào tư bản sản xuất", "Không phụ thuộc", "Tất cả sai"],
-    c: 1
-  },
-  {
-    q: "Giá cả sản xuất bằng...",
-    a: ["Giá cả thị trường trừ lợi nhuận", "Toàn bộ chi phí sản xuất", "Chi phí sản xuất cộng với lợi nhuận bình quân", "Giá trị cộng lợi nhuận thương nghiệp"],
-    c: 2
-  },
-  {
-    q: "Sự xuất hiện của lợi nhuận, lợi tức, địa tô có ý nghĩa gì?",
-    a: ["Làm rõ khái niệm", "Che giấu sự tồn tại của giá trị thặng dư một cách tinh vi", "Lợi nhuận là con đẻ của tư bản ứng trước", "Tính toán chi phí chặt chẽ"],
-    c: 1
-  },
-  {
-    q: "Địa tô tư bản chủ nghĩa có nguồn gốc từ lao động của...",
-    a: ["Địa chủ", "Nhà tư bản nông nghiệp", "Năng lực kinh doanh", "Công nhân làm thuê trong lĩnh vực nông nghiệp"],
-    c: 3
   }
-  ];
-// ================== BIẾN TOÀN CỤC ==================
-let index = 0;
-let answered = false;
-let quizQuestions = [];
+];
 
-// ================== HÀM TRỘN ==================
+// ================== BIẾN ==================
+let index = 0;
+let score = 0;
+let quizQuestions = [];
+let userAnswers = [];
+
+// ================== TRỘN ==================
 function shuffle(array) {
   return array
     .map(v => ({ v, r: Math.random() }))
@@ -554,53 +127,69 @@ function shuffle(array) {
     .map(x => x.v);
 }
 
-// ================== BẮT ĐẦU / LÀM LẠI ==================
+// ================== KHỞI TẠO ==================
 function startQuiz() {
   index = 0;
-  answered = false;
+  score = 0;
+  userAnswers = [];
 
-  // 🔀 đảo câu hỏi
-  quizQuestions = shuffle([...questions]);
+  quizQuestions = shuffle([...questions]).map(q => {
+    const answers = q.a.map((text, i) => ({
+      text,
+      index: i,
+      isCorrect: i === q.c
+    }));
+
+    return {
+      ...q,
+      mixedAnswers: shuffle(answers)
+    };
+  });
 
   loadQuestion();
 }
 
-// ================== LOAD CÂU HỎI ==================
+// ================== LOAD CÂU ==================
 function loadQuestion() {
-  answered = false;
   const q = quizQuestions[index];
 
   document.getElementById("question").innerText =
-    `Câu ${index + 1}: ${q.q}`;
+    `Câu ${index + 1}/${quizQuestions.length}: ${q.q}`;
 
   const answersDiv = document.getElementById("answers");
   answersDiv.innerHTML = "";
 
-  // 🔀 đảo đáp án nhưng giữ index đúng
-  const mixedAnswers = q.a.map((text, i) => ({
-    text,
-    isCorrect: i === q.c
-  }));
-
-  shuffle(mixedAnswers).forEach(ans => {
+  q.mixedAnswers.forEach(ans => {
     const div = document.createElement("div");
     div.className = "answer";
     div.innerText = ans.text;
-    div.onclick = () => checkAnswer(div, ans.isCorrect);
+
+    if (userAnswers[index] !== undefined) {
+      if (ans.isCorrect) div.classList.add("correct");
+      if (ans.index === userAnswers[index] && !ans.isCorrect)
+        div.classList.add("wrong");
+    } else {
+      div.onclick = () => checkAnswer(div, ans);
+    }
+
     answersDiv.appendChild(div);
   });
+
+  updateScore();
 }
 
-// ================== KIỂM TRA ĐÁP ÁN ==================
-function checkAnswer(element, isCorrect) {
-  if (answered) return;
-  answered = true;
+// ================== CHỌN ĐÁP ÁN ==================
+function checkAnswer(element, ans) {
+  if (userAnswers[index] !== undefined) return;
+
+  userAnswers[index] = ans.index;
 
   const all = document.querySelectorAll(".answer");
   all.forEach(a => a.onclick = null);
 
-  if (isCorrect) {
+  if (ans.isCorrect) {
     element.classList.add("correct");
+    score++;
   } else {
     element.classList.add("wrong");
     all.forEach(a => {
@@ -609,22 +198,43 @@ function checkAnswer(element, isCorrect) {
       }
     });
   }
+
+  updateScore();
 }
 
-// ================== CÂU TIẾP ==================
+// ================== ĐIỀU HƯỚNG ==================
 function nextQuestion() {
-  index++;
-  if (index >= quizQuestions.length) {
-    alert("🎉 Bạn đã hoàn thành bài thi!\nBắt đầu lại với thứ tự mới.");
-    startQuiz();
-    return;
+  if (index < quizQuestions.length - 1) {
+    index++;
+    loadQuestion();
+  } else {
+    alert(`🎉 Hoàn thành!\nSố câu đúng: ${score}/${quizQuestions.length}`);
   }
-  loadQuestion();
 }
 
-// ================== CHẠY LẦN ĐẦU ==================
+function prevQuestion() {
+  if (index > 0) {
+    index--;
+    loadQuestion();
+  }
+}
+
+// ================== LÀM LẠI ==================
+function resetQuiz() {
+  if (!confirm("Bạn có chắc muốn làm lại từ đầu?")) return;
+  startQuiz();
+}
+
+// ================== ĐIỂM ==================
+function updateScore() {
+  document.getElementById("score").innerText =
+    `✅ Đúng: ${score} / ${quizQuestions.length}`;
+}
+
+// ================== CHẠY ==================
 startQuiz();
 </script>
 
 </body>
 </html>
+
