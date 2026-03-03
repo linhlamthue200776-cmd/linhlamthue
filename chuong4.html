@@ -168,6 +168,7 @@ let questions = [];
 
 /* ===== DỮ LIỆU ===== */
 const rawQuestions = [
+
   {
     q: "Trong kinh tế thị trường, mục đích cuối cùng của cạnh tranh giữa các nhà tư bản là gì?",
     a: ["Tăng sản lượng tiêu dùng", "Giành lấy giá trị thặng dư cao hơn", "Bảo đảm an toàn cho sản xuất", "Phát triển lực lượng lao động xã hội"],
@@ -420,106 +421,129 @@ const rawQuestions = [
   }
 ];
 
-// ===== BIẾN =====
-let questions=[], answers=[], index=0;
-let timeLeft=3600, timer;
+/* ===== TRỘN ===== */
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+}
 
-// ===== HÀM =====
-function shuffle(arr){ return arr.sort(()=>Math.random()-0.5); }
-
-function startQuiz(){
-  questions = shuffle([...questionsAll]);
-  answers = new Array(questions.length).fill(null);
+/* ===== KHỞI TẠO ===== */
+function startQuiz() {
   index = 0;
-  timeLeft = 3600;
-  buildGrid();
+  score = 0;
+  userAnswers = [];
+
+  questions = JSON.parse(JSON.stringify(rawQuestions));
+  shuffle(questions);
+
+  questions.forEach(q => {
+    const correct = q.a[q.c];
+    shuffle(q.a);
+    q.c = q.a.indexOf(correct);
+  });
+
   loadQuestion();
-  startTimer();
 }
 
-function startTimer(){
-  clearInterval(timer);
-  timer = setInterval(()=>{
-    timeLeft--;
-    const m=Math.floor(timeLeft/60), s=timeLeft%60;
-    document.getElementById("time").innerText =
-      `${m}:${s<10?'0':''}${s}`;
-    if(timeLeft<=0) finishQuiz();
-  },1000);
-}
-
-function loadQuestion(){
+/* ===== LOAD ===== */
+function loadQuestion() {
   const q = questions[index];
   document.getElementById("question").innerText =
-    `Câu ${index+1}: ${q.q}`;
-  const box = document.getElementById("answers");
-  box.innerHTML="";
-  q.a.forEach((text,i)=>{
-    const d=document.createElement("div");
-    d.className="answer";
-    d.innerText=text;
-    if(answers[index]===i) d.classList.add("selected");
-    d.onclick=()=>{
-      answers[index]=i;
-      loadQuestion();
-      updateGrid();
-    };
-    box.appendChild(d);
+    `Câu ${index + 1}: ${q.q}`;
+
+  const answersDiv = document.getElementById("answers");
+  answersDiv.innerHTML = "";
+
+  q.a.forEach((text, i) => {
+    const div = document.createElement("div");
+    div.className = "answer";
+    div.innerText = text;
+    div.onclick = () => checkAnswer(div, i);
+    answersDiv.appendChild(div);
+
+    if (userAnswers[index] !== undefined) {
+      if (i === q.c) div.classList.add("correct");
+      if (i === userAnswers[index] && i !== q.c)
+        div.classList.add("wrong");
+      div.onclick = null;
+    }
   });
+
+  updateScore();
 }
 
-function nextQuestion(){ if(index<questions.length-1){ index++; loadQuestion(); } }
-function prevQuestion(){ if(index>0){ index--; loadQuestion(); } }
+/* ===== CHỌN ===== */
+function checkAnswer(el, i) {
+  if (userAnswers[index] !== undefined) return;
 
-function buildGrid(){
-  const g=document.getElementById("questionGrid");
-  g.innerHTML="";
-  questions.forEach((_,i)=>{
-    const b=document.createElement("button");
-    b.innerText=i+1;
-    b.onclick=()=>{ index=i; loadQuestion(); };
-    g.appendChild(b);
-  });
+  userAnswers[index] = i;
+
+  if (i === questions[index].c) {
+    el.classList.add("correct");
+    score++;
+  } else {
+    el.classList.add("wrong");
+    document.querySelectorAll(".answer")[questions[index].c]
+      .classList.add("correct");
+  }
+
+  updateScore();
 }
 
-function updateGrid(){
-  document.querySelectorAll("#questionGrid button")
-    .forEach((b,i)=> b.className = answers[i]!=null ? "done" : "");
+/* ===== ĐIỀU HƯỚNG ===== */
+function nextQuestion() {
+  if (index < questions.length - 1) {
+    index++;
+    loadQuestion();
+  } else {
+    showResult();
+  }
 }
 
-function toggleGrid(){
-  const g=document.getElementById("questionGrid");
-  const b=document.getElementById("toggleBtn");
-  g.classList.toggle("hidden");
-  b.innerText=g.classList.contains("hidden")
-    ?"📋 Hiện bảng câu":"❌ Ẩn bảng câu";
+function prevQuestion() {
+  if (index > 0) {
+    index--;
+    loadQuestion();
+  }
 }
 
-function finishQuiz(){
-  clearInterval(timer);
-  let correct=0;
-  questions.forEach((q,i)=>{ if(answers[i]===q.c) correct++; });
-  const score=(correct/questions.length*10).toFixed(2);
-  alert(`Hoàn thành!\nĐúng: ${correct}/${questions.length}\nĐiểm: ${score}`);
+/* ===== MODAL ===== */
+function showResult() {
+  document.getElementById("finalScore").innerText =
+    `Đúng: ${score} / ${questions.length}`;
+  document.getElementById("resultModal").style.display = "block";
 }
 
-function restartQuiz(){
-  if(confirm("Bạn có chắc muốn làm lại từ đầu?")){
+function okReload() {
+  document.getElementById("resultModal").style.display = "none";
+  startQuiz();
+}
+
+/* ===== LÀM LẠI ===== */
+function resetQuiz() {
+  if (confirm("Bạn có chắc muốn làm lại?")) {
     startQuiz();
   }
 }
 
-function goBack(){
-  if(confirm("Bạn có chắc muốn quay lại? Bài làm sẽ bị mất.")){
-    window.history.back();
-  }
+/* ===== ĐIỂM ===== */
+function updateScore() {
+  document.getElementById("score").innerText =
+    `Đúng: ${score} / ${questions.length}`;
 }
 
-// ===== CHẠY =====
 startQuiz();
+function goBack() {
+  window.history.back();
+}  
 </script>
 
 </body>
 </html>
+
+
+
 
 
