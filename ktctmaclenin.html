@@ -2388,4 +2388,110 @@ const questionsAll = [
   c: 0
 } 
 ];
-  
+// ================== BIẾN ==================
+let questions=[], answers=[], index=0;
+let timeLeft=3600, timer;
+
+// ================== HÀM ==================
+function shuffle(arr){
+  return arr.sort(()=>Math.random()-0.5);
+}
+
+function startQuiz(){
+  // 👉 LẤY NGẪU NHIÊN 50 CÂU TRONG TỔNG SỐ CÂU
+  questions = shuffle([...questionsAll]).slice(0, 50);
+
+  answers = new Array(questions.length).fill(null);
+  index = 0;
+  timeLeft = 3600;
+
+  buildGrid();
+  loadQuestion();
+  startTimer();
+}
+
+function startTimer(){
+  clearInterval(timer);
+  timer=setInterval(()=>{
+    timeLeft--;
+    let m=Math.floor(timeLeft/60), s=timeLeft%60;
+    document.getElementById("time").innerText=`${m}:${s<10?'0':''}${s}`;
+    if(timeLeft<=0) finishQuiz();
+  },1000);
+}
+
+function loadQuestion(){
+  const q=questions[index];
+  document.getElementById("question").innerText=
+    `Câu ${index+1}: ${q.q}`;
+  const box=document.getElementById("answers");
+  box.innerHTML="";
+  q.a.forEach((t,i)=>{
+    const d=document.createElement("div");
+    d.className="answer";
+    d.innerText=t;
+    if(answers[index]===i) d.classList.add("selected");
+    d.onclick=()=>{
+      answers[index]=i;
+      loadQuestion();
+      updateGrid();
+    };
+    box.appendChild(d);
+  });
+}
+
+function nextQuestion(){ if(index<questions.length-1){index++;loadQuestion();}}
+function prevQuestion(){ if(index>0){index--;loadQuestion();}}
+
+function buildGrid(){
+  const g=document.getElementById("questionGrid");
+  g.innerHTML="";
+  questions.forEach((_,i)=>{
+    const b=document.createElement("button");
+    b.innerText=i+1;
+    b.onclick=()=>{index=i;loadQuestion();};
+    g.appendChild(b);
+  });
+}
+
+function updateGrid(){
+  document.querySelectorAll("#questionGrid button")
+    .forEach((b,i)=>b.className=answers[i]!=null?"done":"");
+}
+
+function toggleGrid(){
+  document.getElementById("questionGrid").classList.toggle("hidden");
+}
+
+// ================== TÍNH ĐIỂM THANG 10 ==================
+function finishQuiz(){
+  clearInterval(timer);
+  let correct=0;
+  questions.forEach((q,i)=>{
+    if(answers[i]===q.c) correct++;
+  });
+
+  const score = (correct / 50 * 10).toFixed(2);
+
+  document.getElementById("resultText").innerHTML=
+    `Số câu đúng: <b>${correct}/50</b><br>
+     Điểm: <b>${score}/10</b>`;
+
+  document.getElementById("resultModal").style.display="flex";
+}
+
+function restartQuiz(){
+  document.getElementById("resultModal").style.display="none";
+  startQuiz();
+}
+
+function goBack(){
+  if(confirm("Thoát bài thi?")) history.back();
+}
+
+startQuiz();
+</script>
+
+</body>
+</html>
+
